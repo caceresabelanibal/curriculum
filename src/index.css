@@ -100,10 +100,10 @@ nav {
 
 /* Hero */
 .hero {
-  min-height: 85vh;
+  min-height: auto;
+  padding: 8rem 2rem 3rem;
   display: flex;
   align-items: center;
-  padding-top: 6rem; /* compensa navbar */
 }
 .hero::before {
   content: ''; position: absolute; top: -20%; right: -10%;
