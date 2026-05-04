@@ -82,6 +82,12 @@ const CONTENT = {
     ],
     experience: [
       {
+        date: "Feb 2026 — Actual",
+        title: "C.T.O Chieff Technical Officer",
+        company: "BluAxis",
+        description: "Líder tecnológico impulsando la innovación de productos, arquitecturas escalables y equipos de ingeniería de alto rendimiento. Enfocado en alinear la tecnología con la estrategia de negocio, acelerar la entrega mediante automatización y prácticas modernas de DevOps, y construir plataformas resilientes nativas de la nube.",
+      },
+      {
         date: "Jun 2024 — Feb 2026",
         title: "Sr. Automation Engineer | DevOps",
         company: "Nasdaq",
@@ -178,6 +184,12 @@ const CONTENT = {
       { number: "3",   label: "Clouds mastered" },
     ],
     experience: [
+      {
+        date: "Feb 2026 — NOW",
+        title: "C.T.O Chieff Technical Officer",
+        company: "BluAxis",
+        description: "Technology leader driving product innovation, scalable architecture, and high-performing engineering teams. Focused on aligning technology with business strategy, accelerating delivery through automation and modern DevOps practices, and building resilient, cloud-native platforms.",
+      },
       {
         date: "Jun 2024 — Feb 2026",
         title: "Sr. Automation Engineer | DevOps",
