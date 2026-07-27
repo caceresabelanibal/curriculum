@@ -238,6 +238,27 @@ section { padding: 6rem 2rem; }
 .timeline-company { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
 .timeline-desc { font-size: 0.92rem; color: var(--text-soft); line-height: 1.8; }
 
+/* Case Studies */
+.case-studies { display: flex; flex-direction: column; gap: 2rem; }
+.case-study {
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  padding: 2rem 2.25rem; border-radius: var(--radius); transition: border-color 0.3s, transform 0.3s;
+}
+.case-study:hover { border-color: var(--accent); transform: translateY(-3px); }
+.case-study-header {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline;
+  gap: 0.75rem; margin-bottom: 1rem;
+}
+.case-study-title { font-family: 'Cormorant', serif; font-size: 1.4rem; font-weight: 600; line-height: 1.3; max-width: 640px; }
+.case-study-period { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+.case-study-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+.case-study-tag {
+  font-size: 0.72rem; color: var(--text-muted);
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  padding: 0.25rem 0.65rem; border-radius: 2px;
+}
+.case-study-body { font-size: 0.96rem; color: var(--text-soft); line-height: 1.85; }
+
 /* Projects */
 .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
 .project-card {
@@ -493,6 +514,13 @@ footer {
     </div>
   </section>
 
+  <section id="casos-exito">
+    <div class="container">
+      <div class="section-label fade-in" id="labelCases"></div>
+      <div class="case-studies" id="caseStudies"></div>
+    </div>
+  </section>
+
   <section id="proyectos">
     <div class="container">
       <div class="section-label fade-in" id="labelProjects"></div>
@@ -578,14 +606,15 @@ const LOGOS = {
 // ─── CONTENIDO BILINGÜE ─────────────────────────────────────────────────────
 const CONTENT = {
   es: {
-    nav: ["Sobre mí", "Experiencia", "Proyectos", "Skills", "Educación", "Contacto"],
-    navHrefs: ["#sobre-mi", "#experiencia", "#proyectos", "#skills", "#educacion", "#contacto"],
+    nav: ["Sobre mí", "Experiencia", "Casos de Éxito", "Proyectos", "Skills", "Educación", "Contacto"],
+    navHrefs: ["#sobre-mi", "#experiencia", "#casos-exito", "#proyectos", "#skills", "#educacion", "#contacto"],
     subtitle: "C.T.O · Líder Tecnológico en Infraestructura Crítica, Cloud & Automatización",
     description: "Más de 15 años liderando la transformación de infraestructuras críticas para organizaciones de los sectores financiero y de salud — combinando visión estratégica, automatización a escala y arquitecturas cloud resilientes para acelerar resultados de negocio.",
     heroCta1: "Contactame",
     heroCta2: "Ver LinkedIn",
     sectionAbout: "Sobre mí",
     sectionExp: "Experiencia",
+    sectionCases: "Casos de Éxito",
     sectionProjects: "Proyectos & Emprendimientos",
     sectionSkills: "Skills & Stack",
     sectionCerts: "Certificaciones",
@@ -615,6 +644,20 @@ const CONTENT = {
       { date: "Ene 2021 — Oct 2021", title: "Ingeniero de Infraestructura | DevOps", company: "SanCor Salud", description: "Como SRE en una de las principales aseguradoras de salud de Argentina, fui responsable de la automatización y consistencia de los despliegues de aplicaciones críticas para la atención de millones de afiliados, utilizando Docker, Kubernetes, OpenShift, Jenkins, GitHub y AWS." },
       { date: "Sep 2010 — Ene 2021", title: "Líder de Soporte | Laboratorios", company: "Penta Security Solutions", description: "Lideré durante 10 años el soporte técnico y la infraestructura de la organización, especializándome en seguridad de entornos, virtualización, bases de datos (SQL Server, MySQL, Oracle), Windows Server, Linux/Unix y Active Directory — formando y guiando a nuevos analistas a lo largo de la década." },
       { date: "May 2008 — Ago 2010", title: "Analista de Soporte N1 / N2", company: "Hewlett Packard Enterprise", description: "Brindé soporte técnico a clientes enterprise de primer nivel — Banco Santander Río, Molinos Río de la Plata, PepsiCo Cono Sur y Pfizer — sentando las bases de mi trayectoria en infraestructura crítica." },
+    ],
+    caseStudies: [
+      {
+        title: "Pitbull Keyholder → Bomgar Vault: liderazgo técnico en una transición internacional",
+        period: "Abr 2015 — Dic 2016",
+        tags: ["Buenos Aires, Argentina", "Medellín, Colombia", "Jackson, Mississippi, USA"],
+        body: "Fui el responsable técnico de una de las transiciones más sensibles de mi carrera: la migración de la plataforma de gestión de credenciales privilegiadas \"Pitbull Keyholder\" hacia su nuevo propietario, Bomgar, en el marco de su relanzamiento como \"Vault\". No fue una migración técnica aislada, sino una operación coordinada en tres países — Buenos Aires (Argentina), Medellín (Colombia) y Jackson, Mississippi (Estados Unidos) — que exigió sincronizar equipos, husos horarios y criterios de seguridad para garantizar que, durante todo el proceso de cambio de propietario y de marca, la plataforma siguiera protegiendo credenciales críticas sin interrupciones ni brechas de seguridad para los clientes que dependían de ella. Lideré las decisiones técnicas de punta a punta, sosteniendo la continuidad operativa del producto mientras se transformaba de raíz su arquitectura de negocio y su identidad comercial.",
+      },
+      {
+        title: "Nasdaq: de días a minutos — automatización integral de escritorios virtuales para infraestructura de mercados financieros",
+        period: "Jun 2024 — Feb 2026",
+        tags: ["Oracle Cloud", "Terraform & PowerShell", "GitLab CI/CD"],
+        body: "En Nasdaq diseñé, planifiqué y automaticé de punta a punta el despliegue completo de los escritorios virtuales Citrix (VDA) y de todos sus servicios de soporte sobre Oracle Cloud, para una de las infraestructuras de mercados financieros más críticas del mundo. Lo que antes tomaba varios días de trabajo manual y coordinación entre equipos pasó a ejecutarse en minutos, mediante infraestructura como código con Terraform y PowerShell e integración continua con GitLab. El resultado no fue solo velocidad: elevé de forma sostenida la consistencia, la escalabilidad y la confiabilidad del entorno, eliminando la variabilidad del trabajo manual y dejando una plataforma capaz de crecer bajo demanda sin sacrificar control ni seguridad.",
+      },
     ],
     projects: [
       {
@@ -670,14 +713,15 @@ const CONTENT = {
     },
   },
   en: {
-    nav: ["About", "Experience", "Projects", "Skills", "Education", "Contact"],
-    navHrefs: ["#sobre-mi", "#experiencia", "#proyectos", "#skills", "#educacion", "#contacto"],
+    nav: ["About", "Experience", "Success Stories", "Projects", "Skills", "Education", "Contact"],
+    navHrefs: ["#sobre-mi", "#experiencia", "#casos-exito", "#proyectos", "#skills", "#educacion", "#contacto"],
     subtitle: "C.T.O · Technology Leader in Critical Infrastructure, Cloud & Automation",
     description: "15+ years leading the transformation of critical infrastructure for financial and healthcare organizations — combining strategic vision, automation at scale, and resilient cloud architecture to accelerate business outcomes.",
     heroCta1: "Contact me",
     heroCta2: "View LinkedIn",
     sectionAbout: "About me",
     sectionExp: "Experience",
+    sectionCases: "Success Stories",
     sectionProjects: "Projects & Ventures",
     sectionSkills: "Skills & Stack",
     sectionCerts: "Certifications",
@@ -707,6 +751,20 @@ const CONTENT = {
       { date: "Jan 2021 — Oct 2021", title: "Infrastructure Engineer | DevOps", company: "SanCor Salud", description: "As SRE at one of Argentina's leading health insurance providers, I was responsible for the automation and consistency of application deployments critical to the care of millions of members, using Docker, Kubernetes, OpenShift, Jenkins, GitHub, and AWS." },
       { date: "Sep 2010 — Jan 2021", title: "Support Lead | Labs", company: "Penta Security Solutions", description: "For 10 years, I led the organization's technical support and infrastructure, specializing in environment security, virtualization, databases (SQL Server, MySQL, Oracle), Windows Server, Linux/Unix, and Active Directory — training and mentoring new analysts throughout the decade." },
       { date: "May 2008 — Aug 2010", title: "Support Analyst L1 / L2", company: "Hewlett Packard Enterprise", description: "Provided technical support to top-tier enterprise clients — Banco Santander Río, Molinos Río de la Plata, PepsiCo Southern Cone, and Pfizer — laying the foundation of my career in critical infrastructure." },
+    ],
+    caseStudies: [
+      {
+        title: "Pitbull Keyholder → Bomgar Vault: Technical Leadership Through an International Transition",
+        period: "Apr 2015 — Dec 2016",
+        tags: ["Buenos Aires, Argentina", "Medellín, Colombia", "Jackson, Mississippi, USA"],
+        body: "I was the technical lead behind one of the most sensitive transitions of my career: migrating the privileged credential management platform \"Pitbull Keyholder\" to its new owner, Bomgar, as part of its relaunch as \"Vault.\" This was far more than an isolated technical migration — it was a coordinated operation spanning three countries — Buenos Aires (Argentina), Medellín (Colombia), and Jackson, Mississippi (USA) — requiring me to align teams, time zones, and security standards to ensure the platform kept protecting critical credentials without interruption or security gaps for the clients depending on it throughout the entire ownership and brand transition. I drove the technical decisions end to end, sustaining the product's operational continuity while its business architecture and commercial identity were rebuilt from the ground up.",
+      },
+      {
+        title: "Nasdaq: From Days to Minutes — End-to-End Automation of Virtual Desktops for Financial Markets Infrastructure",
+        period: "Jun 2024 — Feb 2026",
+        tags: ["Oracle Cloud", "Terraform & PowerShell", "GitLab CI/CD"],
+        body: "At Nasdaq, I designed, planned, and automated the complete deployment of Citrix Virtual Desktops (VDA) and all their supporting services on Oracle Cloud, for one of the most critical financial markets infrastructures in the world. What used to take several days of manual work and cross-team coordination now runs in minutes, powered by infrastructure as code with Terraform and PowerShell and continuous integration through GitLab. The result wasn't just speed: I durably raised the environment's consistency, scalability, and reliability, removing the variability of manual work and leaving behind a platform able to scale on demand without sacrificing control or security.",
+      },
     ],
     projects: [
       {
@@ -851,6 +909,17 @@ function render() {
       <div class="timeline-title">${item.title}</div>
       <div class="timeline-company">${item.company}</div>
       <div class="timeline-desc">${item.description}</div>
+    </div>`).join('');
+
+  document.getElementById('labelCases').textContent = t.sectionCases;
+  document.getElementById('caseStudies').innerHTML = t.caseStudies.map(c => `
+    <div class="case-study fade-in">
+      <div class="case-study-header">
+        <div class="case-study-title">${c.title}</div>
+        <div class="case-study-period">${c.period}</div>
+      </div>
+      <div class="case-study-tags">${c.tags.map(tag => `<span class="case-study-tag">${tag}</span>`).join('')}</div>
+      <p class="case-study-body">${c.body}</p>
     </div>`).join('');
 
   document.getElementById('labelProjects').textContent = t.sectionProjects;
