@@ -269,6 +269,20 @@ section { padding: 6rem 2rem; }
 }
 .case-study-body { font-size: 0.96rem; color: var(--text-soft); line-height: 1.85; }
 
+/* Speaking */
+.speaking-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.speaking-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; transition: border-color 0.3s, transform 0.3s;
+  display: flex; flex-direction: column;
+}
+.speaking-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.speaking-photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: grayscale(15%); display: block; }
+.speaking-content { padding: 1.5rem 1.75rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.speaking-title { font-family: 'Cormorant', serif; font-size: 1.15rem; font-weight: 600; }
+.speaking-tag { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.speaking-body { font-size: 0.86rem; color: var(--text-soft); line-height: 1.75; }
+
 /* Projects */
 .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
 .project-card {
@@ -539,6 +553,13 @@ footer {
     </div>
   </section>
 
+  <section id="conferencias">
+    <div class="container">
+      <div class="section-label fade-in" id="labelSpeaking"></div>
+      <div class="speaking-grid" id="speakingGrid"></div>
+    </div>
+  </section>
+
   <section id="proyectos">
     <div class="container">
       <div class="section-label fade-in" id="labelProjects"></div>
@@ -624,8 +645,8 @@ const LOGOS = {
 // ─── CONTENIDO BILINGÜE ─────────────────────────────────────────────────────
 const CONTENT = {
   es: {
-    nav: ["Propósito", "Sobre mí", "Experiencia", "Casos de Éxito", "Proyectos", "Skills", "Educación", "Contacto"],
-    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#proyectos", "#skills", "#educacion", "#contacto"],
+    nav: ["Propósito", "Sobre mí", "Experiencia", "Casos de Éxito", "Conferencias", "Proyectos", "Skills", "Educación", "Contacto"],
+    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#contacto"],
     subtitle: "C.T.O · Líder Tecnológico en Infraestructura Crítica, Cloud & Automatización",
     description: "Más de 15 años liderando la transformación de infraestructuras críticas para organizaciones de los sectores financiero y de salud — combinando visión estratégica, automatización a escala y arquitecturas cloud resilientes para acelerar resultados de negocio.",
     heroCta1: "Contactame",
@@ -640,6 +661,7 @@ const CONTENT = {
     sectionAbout: "Sobre mí",
     sectionExp: "Experiencia",
     sectionCases: "Casos de Éxito",
+    sectionSpeaking: "Conferencias Internacionales",
     sectionProjects: "Proyectos & Emprendimientos",
     sectionSkills: "Skills & Stack",
     sectionCerts: "Certificaciones",
@@ -682,6 +704,26 @@ const CONTENT = {
         period: "Jun 2024 — Feb 2026",
         tags: ["Oracle Cloud", "Terraform & PowerShell", "GitLab CI/CD"],
         body: "En Nasdaq diseñé, planifiqué y automaticé de punta a punta el despliegue completo de los escritorios virtuales Citrix (VDA) y de todos sus servicios de soporte sobre Oracle Cloud, para una de las infraestructuras de mercados financieros más críticas del mundo. Lo que antes tomaba varios días de trabajo manual y coordinación entre equipos pasó a ejecutarse en minutos, mediante infraestructura como código con Terraform y PowerShell e integración continua con GitLab. El resultado no fue solo velocidad: elevé de forma sostenida la consistencia, la escalabilidad y la confiabilidad del entorno, eliminando la variabilidad del trabajo manual y dejando una plataforma capaz de crecer bajo demanda sin sacrificar control ni seguridad.",
+      },
+    ],
+    speaking: [
+      {
+        title: "Segurinfo Chile — Santiago",
+        tag: "Congreso Iberoamericano de Seguridad de la Información · 2013",
+        image: "talk-chile.jpg",
+        body: "Expuse ante especialistas en seguridad de toda la región sobre la gestión de usuarios sensitivos y credenciales privilegiadas, presentando en representación de Pitbull Software como Responsable Regional. Fue mi primera exposición internacional sobre un problema que, años después, seguiría abordando desde la migración de esa misma plataforma hacia Bomgar Vault.",
+      },
+      {
+        title: "Segurinfo Colombia — Bogotá",
+        tag: "Congreso Iberoamericano de Seguridad de la Información · 2013",
+        image: "talk-colombia.jpg",
+        body: "Profundicé en Bogotá sobre la definición y el tratamiento de usuarios sensitivos —cuentas de emergencia, accesos de máximo privilegio y credenciales compartidas— y sobre los controles necesarios para reducir su exposición, ante una audiencia de referentes de seguridad de toda Iberoamérica.",
+      },
+      {
+        title: "Segurinfo Argentina — Nordeste",
+        tag: "Congreso Iberoamericano de Seguridad de la Información · 2013",
+        image: "talk-argentina.jpg",
+        body: "Cerré el ciclo de charlas de 2013 llevando la misma discusión sobre seguridad de usuarios sensitivos al Segurinfo del Nordeste argentino, consolidando en tres países —Chile, Colombia y Argentina— un mismo mensaje: la gestión de accesos privilegiados no es un detalle técnico, es la primera línea de defensa de cualquier organización.",
       },
     ],
     projects: [
@@ -738,8 +780,8 @@ const CONTENT = {
     },
   },
   en: {
-    nav: ["Mission", "About", "Experience", "Success Stories", "Projects", "Skills", "Education", "Contact"],
-    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#proyectos", "#skills", "#educacion", "#contacto"],
+    nav: ["Mission", "About", "Experience", "Success Stories", "Speaking", "Projects", "Skills", "Education", "Contact"],
+    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#contacto"],
     subtitle: "C.T.O · Technology Leader in Critical Infrastructure, Cloud & Automation",
     description: "15+ years leading the transformation of critical infrastructure for financial and healthcare organizations — combining strategic vision, automation at scale, and resilient cloud architecture to accelerate business outcomes.",
     heroCta1: "Contact me",
@@ -754,6 +796,7 @@ const CONTENT = {
     sectionAbout: "About me",
     sectionExp: "Experience",
     sectionCases: "Success Stories",
+    sectionSpeaking: "International Speaking",
     sectionProjects: "Projects & Ventures",
     sectionSkills: "Skills & Stack",
     sectionCerts: "Certifications",
@@ -796,6 +839,26 @@ const CONTENT = {
         period: "Jun 2024 — Feb 2026",
         tags: ["Oracle Cloud", "Terraform & PowerShell", "GitLab CI/CD"],
         body: "At Nasdaq, I designed, planned, and automated the complete deployment of Citrix Virtual Desktops (VDA) and all their supporting services on Oracle Cloud, for one of the most critical financial markets infrastructures in the world. What used to take several days of manual work and cross-team coordination now runs in minutes, powered by infrastructure as code with Terraform and PowerShell and continuous integration through GitLab. The result wasn't just speed: I durably raised the environment's consistency, scalability, and reliability, removing the variability of manual work and leaving behind a platform able to scale on demand without sacrificing control or security.",
+      },
+    ],
+    speaking: [
+      {
+        title: "Segurinfo Chile — Santiago",
+        tag: "Ibero-American Information Security Congress · 2013",
+        image: "talk-chile.jpg",
+        body: "I spoke to security specialists from across the region about managing sensitive users and privileged credentials, presenting on behalf of Pitbull Software as Regional Manager. It was my first international talk on a problem I would keep tackling years later while leading that same platform's migration to Bomgar Vault.",
+      },
+      {
+        title: "Segurinfo Colombia — Bogotá",
+        tag: "Ibero-American Information Security Congress · 2013",
+        image: "talk-colombia.jpg",
+        body: "In Bogotá, I went deeper into defining and handling sensitive users —emergency accounts, maximum-privilege access, and shared credentials— and the controls needed to reduce their exposure, presenting to an audience of security leaders from across Ibero-America.",
+      },
+      {
+        title: "Segurinfo Argentina — Nordeste",
+        tag: "Ibero-American Information Security Congress · 2013",
+        image: "talk-argentina.jpg",
+        body: "I closed out 2013's speaking circuit by bringing the same conversation on sensitive-user security to Segurinfo in Argentina's Nordeste region, delivering one consistent message across three countries —Chile, Colombia, and Argentina: privileged access management isn't a technical detail, it's an organization's first line of defense.",
       },
     ],
     projects: [
@@ -956,6 +1019,17 @@ function render() {
       </div>
       <div class="case-study-tags">${c.tags.map(tag => `<span class="case-study-tag">${tag}</span>`).join('')}</div>
       <p class="case-study-body">${c.body}</p>
+    </div>`).join('');
+
+  document.getElementById('labelSpeaking').textContent = t.sectionSpeaking;
+  document.getElementById('speakingGrid').innerHTML = t.speaking.map(s => `
+    <div class="speaking-card fade-in">
+      <img src="${s.image}" alt="${s.title}" class="speaking-photo" />
+      <div class="speaking-content">
+        <div class="speaking-title">${s.title}</div>
+        <div class="speaking-tag">${s.tag}</div>
+        <p class="speaking-body">${s.body}</p>
+      </div>
     </div>`).join('');
 
   document.getElementById('labelProjects').textContent = t.sectionProjects;
