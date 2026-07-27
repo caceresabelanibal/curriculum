@@ -1,13 +1,832 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Abel Aníbal Cáceres</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Abel Aníbal Cáceres</title>
+<meta name="description" content="Abel Aníbal Cáceres — CTO | Sysadmin · DevOps · SRE. Más de 15 años construyendo infraestructuras sólidas, escalables y automatizadas." />
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #161616;
+  --border: #2a2a2a;
+  --accent: #c9a84c;
+  --accent-dim: rgba(201, 168, 76, 0.12);
+  --text: #f0ece4;
+  --text-muted: #7a7570;
+  --text-soft: #b8b0a4;
+  --radius: 4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  cursor: none;
+}
+
+/* Cursor */
+.cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--accent); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease;
+}
+.cursor-ring {
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(201,168,76,0.4); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.15s ease;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Layout */
+.container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.5rem 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(to bottom, rgba(13,13,13,0.95), transparent);
+  backdrop-filter: blur(8px);
+}
+.nav-logo {
+  font-family: 'Cormorant', serif; font-size: 1.1rem;
+  color: var(--accent); letter-spacing: 0.05em; text-decoration: none;
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  color: var(--text-muted); text-decoration: none;
+  font-size: 0.78rem; letter-spacing: 0.15em;
+  text-transform: uppercase; transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--accent); }
+
+/* Language Switch */
+.lang-switch {
+  display: flex; align-items: center; gap: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 6px;
+  cursor: none; position: relative;
+  transition: border-color 0.3s;
+}
+.lang-switch:hover { border-color: var(--accent); }
+.lang-option {
+  font-size: 0.68rem; font-weight: 500;
+  letter-spacing: 0.1em; padding: 3px 8px;
+  border-radius: 14px; z-index: 1; position: relative;
+  transition: color 0.3s;
+  color: var(--text-muted);
+}
+.lang-switch.lang-es .lang-option:first-child,
+.lang-switch.lang-en .lang-option:last-child {
+  color: #0d0d0d;
+}
+.lang-slider {
+  position: absolute;
+  width: 34px; height: 26px;
+  background: var(--accent); border-radius: 14px;
+  transition: left 0.3s cubic-bezier(0.22,1,0.36,1);
+  top: 50%; transform: translateY(-50%);
+}
+.lang-switch.lang-es .lang-slider { left: 5px; }
+.lang-switch.lang-en .lang-slider { left: calc(100% - 39px); }
+
+/* Hero */
+.hero {
+  min-height: auto;
+  padding: 8rem 2rem 3rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -20%; right: -10%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 900px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: center; gap: 4rem;
+}
+.hero-tag {
+  font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.2s both;
+}
+.hero-tag::before { content: ''; width: 30px; height: 1px; background: var(--accent); }
+.hero h1 {
+  font-family: 'Cormorant', sans-serif;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 300; line-height: 1.1;
+  margin-bottom: 1.5rem; letter-spacing: 0.08em;
+  animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.35s both;
+}
+.hero-desc {
+  color: var(--text-soft); font-size: 1.05rem;
+  max-width: 460px; margin-bottom: 2.5rem;
+  animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.5s both;
+}
+.hero-ctas {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.65s both;
+}
+.hero-photo-wrap {
+  animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.4s both;
+}
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.btn-primary {
+  background: var(--accent); color: #0d0d0d;
+  padding: 0.75rem 1.75rem; font-size: 0.82rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border: none; border-radius: var(--radius);
+  text-decoration: none; cursor: none;
+  transition: opacity 0.2s, transform 0.2s;
+  display: inline-block;
+}
+.btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+.btn-secondary {
+  background: transparent; color: var(--text-soft);
+  padding: 0.75rem 1.75rem; font-size: 0.82rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  text-decoration: none; cursor: none;
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  display: inline-block;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+.hero-photo {
+  width: 220px; height: 280px; border-radius: 2px; object-fit: cover;
+  filter: grayscale(20%); border: 1px solid var(--border);
+  box-shadow: 0 0 60px rgba(201,168,76,0.08);
+  -webkit-mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 60%, transparent 100%);
+  mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 40%, transparent 100%);
+}
+
+/* Sections */
+section { padding: 6rem 2rem; }
+.section-label {
+  font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 3rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Fade-in on scroll */
+.fade-in {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* About */
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+.about-text { font-size: 1rem; color: var(--text-soft); line-height: 1.9; }
+.about-text p + p { margin-top: 1.25rem; }
+.about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.stat-item {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 1.5rem; border-radius: var(--radius); transition: border-color 0.3s;
+}
+.stat-item:hover { border-color: var(--accent); }
+.stat-number {
+  font-family: 'Cormorant', serif; font-size: 2.2rem; font-weight: 600;
+  color: var(--accent); line-height: 1; margin-bottom: 0.4rem;
+}
+.stat-label { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 2rem; }
+.timeline::before {
+  content: ''; position: absolute; left: 0; top: 8px; bottom: 0;
+  width: 1px; background: var(--border);
+}
+.timeline-item { position: relative; margin-bottom: 3rem; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -2rem; top: 8px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); transform: translateX(-3px);
+}
+.timeline-date { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; }
+.timeline-title { font-family: 'Cormorant', serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.25rem; }
+.timeline-company { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+.timeline-desc { font-size: 0.92rem; color: var(--text-soft); line-height: 1.8; }
+
+/* Skills */
+.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+.skill-group {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 1.75rem; border-radius: var(--radius);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.skill-group:hover { border-color: var(--accent); transform: translateY(-3px); }
+.skill-group-title { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+.skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.skill-tag {
+  font-size: 0.8rem; color: var(--text-soft);
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  padding: 0.3rem 0.75rem; border-radius: 2px;
+}
+
+/* Certifications */
+.cert-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; }
+.cert-item {
+  font-size: 0.88rem; color: var(--text-soft);
+  padding: 0.75rem 1rem; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  display: flex; align-items: center; gap: 0.6rem; transition: border-color 0.3s;
+}
+.cert-item:hover { border-color: var(--accent); }
+.cert-dot { color: var(--accent); font-size: 0.7rem; flex-shrink: 0; }
+
+/* Languages section */
+.lang-list { display: flex; flex-direction: column; gap: 2rem; max-width: 560px; }
+.lang-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 0.6rem;
+}
+.lang-name { font-family: 'Cormorant', serif; font-size: 1.15rem; font-weight: 600; }
+.lang-level { font-size: 0.78rem; color: var(--accent); letter-spacing: 0.08em; }
+.lang-bar-bg {
+  height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
+}
+.lang-bar-fill {
+  height: 100%; background: var(--accent); border-radius: 2px; width: 0;
+  transition: width 1.2s cubic-bezier(0.22,1,0.36,1);
+}
+
+/* Education */
+.edu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+.edu-card {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 2rem; border-radius: var(--radius); transition: border-color 0.3s;
+}
+.edu-card:hover { border-color: var(--accent); }
+.edu-year { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+.edu-title { font-family: 'Cormorant', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.3rem; }
+.edu-institution { font-size: 0.85rem; color: var(--text-muted); }
+
+/* Contact */
+.contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+.contact-title {
+  font-family: 'Cormorant', serif; font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600; line-height: 1.1; margin-bottom: 1.5rem;
+}
+.contact-title em { font-style: italic; color: var(--accent); }
+.contact-text { color: var(--text-soft); font-size: 0.95rem; margin-bottom: 2rem; }
+.contact-links { display: flex; flex-direction: column; gap: 1rem; }
+.contact-link {
+  display: flex; align-items: center; gap: 0.75rem;
+  color: var(--text-soft); text-decoration: none; font-size: 0.9rem;
+  transition: color 0.2s; padding: 0.5rem 0; border-bottom: 1px solid var(--border);
+}
+.contact-link:hover { color: var(--accent); }
+.contact-link svg { color: var(--accent); flex-shrink: 0; }
+
+/* Footer */
+footer {
+  padding: 2rem; text-align: center; border-top: 1px solid var(--border);
+  color: var(--text-muted); font-size: 0.78rem; letter-spacing: 0.05em;
+}
+
+/* Testimonials */
+.testimonials-track-wrapper {
+  overflow: hidden;
+  position: relative;
+  margin: 0 -2rem;
+  padding: 1rem 0 2rem;
+}
+.testimonials-track-wrapper::before,
+.testimonials-track-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 120px;
+  z-index: 2;
+  pointer-events: none;
+}
+.testimonials-track-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg), transparent);
+}
+.testimonials-track-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg), transparent);
+}
+.testimonials-track {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  animation: scrollTrack 40s linear infinite;
+}
+.testimonials-track:hover {
+  animation-play-state: paused;
+}
+@keyframes scrollTrack {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.testimonial-card {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.75rem;
+  transition: border-color 0.3s, transform 0.3s;
+  position: relative;
+}
+.testimonial-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+.testimonial-quote {
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.35;
+  font-family: 'Cormorant', serif;
+  margin-bottom: 0.25rem;
+}
+.testimonial-text {
+  font-size: 0.88rem;
+  color: var(--text-soft);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+.testimonial-author {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.testimonial-name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+.testimonial-role {
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+.testimonial-date {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-photo-wrap { display: none; }
+  .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .contact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  nav { padding: 1.25rem 1rem; gap: 1rem; }
+  .nav-links { gap: 1rem; }
+  .nav-links a { font-size: 0.68rem; }
+}
+@media (pointer: coarse) {
+  body, .btn-primary, .btn-secondary, .lang-switch { cursor: auto; }
+  .cursor, .cursor-ring { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="#inicio" class="nav-logo"></a>
+  <ul class="nav-links" id="navLinks"></ul>
+  <button class="lang-switch lang-es" id="langSwitch" aria-label="Switch language">
+    <span class="lang-option">ES</span>
+    <span class="lang-slider"></span>
+    <span class="lang-option">EN</span>
+  </button>
+</nav>
+
+<main>
+  <section class="hero" id="inicio">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-tag" id="heroTag"></div>
+        <h1 id="heroName">Abel Aníbal Cáceres</h1>
+        <p class="hero-desc" id="heroDesc"></p>
+        <div class="hero-ctas">
+          <a href="#contacto" class="btn-primary" id="heroCta1"></a>
+          <a href="https://www.linkedin.com/in/abelanibalcaceres" target="_blank" rel="noreferrer" class="btn-secondary" id="heroCta2"></a>
+        </div>
+      </div>
+      <div class="hero-photo-wrap">
+        <img src="yo.jpeg" alt="Abel Aníbal Cáceres" class="hero-photo" />
+      </div>
+    </div>
+  </section>
+
+  <section id="sobre-mi">
+    <div class="container">
+      <div class="section-label fade-in" id="labelAbout"></div>
+      <div class="about-grid">
+        <div class="about-text fade-in" id="aboutText"></div>
+        <div class="about-stats" id="aboutStats"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experiencia">
+    <div class="container">
+      <div class="section-label fade-in" id="labelExp"></div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="container">
+      <div class="section-label fade-in" id="labelSkills"></div>
+      <div class="skills-grid" id="skillsGrid"></div>
+      <div class="section-label fade-in" id="labelCerts" style="margin-top:3.5rem"></div>
+      <div class="cert-list" id="certList"></div>
+    </div>
+  </section>
+
+  <section id="idiomas">
+    <div class="container">
+      <div class="section-label fade-in" id="labelLang"></div>
+      <div class="lang-list" id="langList"></div>
+    </div>
+  </section>
+
+  <section id="educacion">
+    <div class="container">
+      <div class="section-label fade-in" id="labelEdu"></div>
+      <div class="edu-grid" id="eduGrid"></div>
+    </div>
+  </section>
+
+  <section id="referencias">
+    <div class="container">
+      <div class="section-label fade-in" id="labelRefs"></div>
+    </div>
+    <div class="testimonials-track-wrapper">
+      <div class="testimonials-track" id="testimonialsTrack"></div>
+    </div>
+  </section>
+
+  <section id="contacto">
+    <div class="container">
+      <div class="contact-inner">
+        <div class="fade-in">
+          <h2 class="contact-title" id="contactTitle"></h2>
+          <p class="contact-text" id="contactText"></p>
+          <a href="#" class="btn-primary" id="contactBtn"></a>
+        </div>
+        <div class="contact-links fade-in" id="contactLinks"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p id="footerText"></p>
+</footer>
+
+<script>
+// ─── ICONOS (SVG inline, sin dependencias) ─────────────────────────────────
+const ICONS = {
+  mail: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
+  phone: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.812 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.412 6.384"/></svg>',
+  pin: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>',
+  linkedin: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>',
+  external: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>',
+};
+
+// ─── CONTENIDO BILINGÜE ─────────────────────────────────────────────────────
+const CONTENT = {
+  es: {
+    nav: ["Sobre mí", "Experiencia", "Skills", "Educación", "Contacto"],
+    navHrefs: ["#sobre-mi", "#experiencia", "#skills", "#educacion", "#contacto"],
+    subtitle: "Chieff Technical Officer (C.T.O) | Sysadmin · DevOps · S.R.E",
+    description: "Más de 15 años construyendo infraestructuras sólidas, escalables y automatizadas — desde el servidor hasta la estrategia tecnológica.",
+    heroCta1: "Contactame",
+    heroCta2: "Ver LinkedIn",
+    sectionAbout: "Sobre mí",
+    sectionExp: "Experiencia",
+    sectionSkills: "Skills & Stack",
+    sectionCerts: "Certificaciones",
+    sectionEdu: "Educación",
+    sectionLang: "Idiomas",
+    sectionRefs: "Referencias",
+    contactTitle: "Hablemos de tu",
+    contactTitleEm: "próximo desafío",
+    contactText: "Disponible para roles de liderazgo técnico, consultoría de infraestructura o proyectos DevOps. No dudes en escribirme.",
+    contactBtn: "Enviar mensaje",
+    footerText: "Abel Aníbal Cáceres — La Falda, Córdoba, Argentina",
+    about: [
+      "Cuento con más de 15 años de experiencia en IT, con una base sólida en administración de sistemas (Windows, Linux, bases de datos, scripting y seguridad) y más de 5 años enfocado en prácticas DevOps, automatización y cloud. He trabajado diseñando, implementando y operando infraestructuras en Azure y AWS, utilizando tecnologías como Terraform, CloudFormation, EKS, Kubernetes, Docker, OpenShift, Jenkins, GitHub Actions, Harness y Azure DevOps.",
+      "Me considero un líder enfocado y comprometido, con capacidad para adaptarme a contextos cambiantes y gestionar escenarios imprevistos. Creo firmemente que los equipos que abrazan el cambio y la mejora continua son los que logran sostener resultados y superar los desafíos de un mercado en constante evolución.",
+    ],
+    stats: [
+      { number: "15+", label: "Años en IT" },
+      { number: "5+",  label: "Años en DevOps" },
+      { number: "5",   label: "Empresas líderes" },
+      { number: "3",   label: "Clouds dominadas" },
+    ],
+    experience: [
+      { date: "Feb 2026 — Actual", title: "C.T.O Chieff Technical Officer", company: "BluAxis", description: "Líder tecnológico impulsando la innovación de productos, arquitecturas escalables y equipos de ingeniería de alto rendimiento. Enfocado en alinear la tecnología con la estrategia de negocio, acelerar la entrega mediante automatización y prácticas modernas de DevOps, y construir plataformas resilientes nativas de la nube." },
+      { date: "Jun 2024 — Feb 2026", title: "Sr. Automation Engineer | DevOps", company: "Nasdaq", description: "Automatización del despliegue completo de VDAs Citrix y servicios de soporte sobre Oracle Cloud, reduciendo el tiempo de aprovisionamiento de varios días a minutos. Infraestructura gestionada con Terraform y PowerShell, CI/CD con GitLab." },
+      { date: "Abr 2024 — Jun 2024", title: "Sr. DevOps Engineer", company: "Nubiral", description: "Proyecto intensivo en Microsoft Azure: despliegue y configuración de VMs, gestión de infraestructura con ARM templates, pipelines de CI/CD con Azure DevOps y automatización de flujos de despliegue." },
+      { date: "Oct 2021 — Abr 2024", title: "DevOps Engineer — SRE", company: "Techunting · Proyecto: Particle 41", description: "SRE a cargo de construir el puente entre desarrollo y operaciones. Automatización y escalabilidad en AWS y Azure usando Harness, Helm, Kubernetes, Terraform, GitHub Actions, Jenkins, CloudFormation, EKS y Azure DevOps." },
+      { date: "Ene 2021 — Oct 2021", title: "Ingeniero de Infraestructura | DevOps", company: "SanCor Salud", description: "SRE encargado del proceso de desarrollo de aplicaciones, automatización y consistencia de despliegues. Stack: Docker, Kubernetes, OpenShift, Jenkins, GitHub, AWS y scripting." },
+      { date: "Sep 2010 — Ene 2021", title: "Líder de Soporte | Laboratorios", company: "Penta Security Solutions", description: "10 años liderando soporte técnico e infraestructura. Especialización en seguridad de entornos, virtualización, bases de datos (SQL Server, MySQL, Oracle), Windows Server, Linux/Unix y Active Directory." },
+      { date: "May 2008 — Ago 2010", title: "Analista de Soporte N1 / N2", company: "Hewlett Packard Enterprise", description: "Soporte técnico para clientes enterprise: Banco Santander RÍO, Molinos Río de la Plata, PepsiCo Cono Sur y Pfizer." },
+    ],
+    skills: [
+      { group: "Cloud", tags: ["AWS", "Azure", "Oracle Cloud", "EKS", "CloudFormation", "ARM Templates"] },
+      { group: "Contenedores & Orquestación", tags: ["Kubernetes", "Docker", "OpenShift", "Helm"] },
+      { group: "CI/CD & Automatización", tags: ["Terraform", "GitHub Actions", "Jenkins", "Harness", "Azure DevOps", "GitLab CI"] },
+      { group: "Sistemas & Scripting", tags: ["Linux", "Windows Server", "PowerShell", "Bash", "Active Directory"] },
+      { group: "Bases de datos", tags: ["SQL Server", "MySQL", "Oracle"] },
+      { group: "Soft Skills", tags: ["Liderazgo técnico", "Scrum Master", "Adaptabilidad", "Mejora continua"] },
+    ],
+    certifications: [
+      "Microsoft Certified: Azure Fundamentals",
+      "Certified Kubernetes Administrator (CKA)",
+      "HashiCorp Terraform Associate",
+      "Scrum Master — Metodologías Ágiles",
+      "Introduction to Oracle Cloud Essentials",
+    ],
+    languages: [
+      { lang: "Español", level: "Nativo", pct: 100 },
+      { lang: "Inglés", level: "B2 — Nivel Profesional de Trabajo", pct: 72 },
+    ],
+    education: [
+      { year: "2017 — 2020", title: "Técnico Superior en Desarrollo de Software", institution: "Instituto Superior Pascal" },
+      { year: "2001 — 2004", title: "Bachiller en Comunicación Social y Medios", institution: "CENS 451" },
+    ],
+    contact: {
+      email: "caceresabelanibal@gmail.com",
+      phone: "+54 351 286 9149",
+      location: "La Falda, Córdoba, Argentina",
+      linkedin: "https://www.linkedin.com/in/abelanibalcaceres",
+    },
+  },
+  en: {
+    nav: ["About", "Experience", "Skills", "Education", "Contact"],
+    navHrefs: ["#sobre-mi", "#experiencia", "#skills", "#educacion", "#contacto"],
+    subtitle: "Chieff Technical Officer (C.T.O) | Sysadmin · DevOps · S.R.E",
+    description: "15+ years building solid, scalable, and automated infrastructures — from the server room to the technology strategy.",
+    heroCta1: "Contact me",
+    heroCta2: "View LinkedIn",
+    sectionAbout: "About me",
+    sectionExp: "Experience",
+    sectionSkills: "Skills & Stack",
+    sectionCerts: "Certifications",
+    sectionEdu: "Education",
+    sectionLang: "Languages",
+    sectionRefs: "References",
+    contactTitle: "Let's talk about your",
+    contactTitleEm: "next challenge",
+    contactText: "Available for technical leadership roles, infrastructure consulting, or DevOps projects. Feel free to reach out.",
+    contactBtn: "Send message",
+    footerText: "Abel Aníbal Cáceres — La Falda, Córdoba, Argentina",
+    about: [
+      "I have over 15 years of experience in IT, with a strong foundation in systems administration (Windows, Linux, databases, scripting, and security) and more than 5 years focused on DevOps practices, automation, and cloud. I have designed, implemented, and operated infrastructures on Azure and AWS using technologies such as Terraform, CloudFormation, EKS, Kubernetes, Docker, OpenShift, Jenkins, GitHub Actions, Harness, and Azure DevOps.",
+      "I consider myself a focused and committed leader, capable of adapting to changing contexts and managing unforeseen scenarios. I firmly believe that teams that embrace change and continuous improvement are the ones that sustain results and overcome the challenges of an ever-evolving market.",
+    ],
+    stats: [
+      { number: "15+", label: "Years in IT" },
+      { number: "5+",  label: "Years in DevOps" },
+      { number: "5",   label: "Top companies" },
+      { number: "3",   label: "Clouds mastered" },
+    ],
+    experience: [
+      { date: "Feb 2026 — NOW", title: "C.T.O Chieff Technical Officer", company: "BluAxis", description: "Technology leader driving product innovation, scalable architecture, and high-performing engineering teams. Focused on aligning technology with business strategy, accelerating delivery through automation and modern DevOps practices, and building resilient, cloud-native platforms." },
+      { date: "Jun 2024 — Feb 2026", title: "Sr. Automation Engineer | DevOps", company: "Nasdaq", description: "Full automation of Citrix VDA deployments and supporting services on Oracle Cloud, reducing provisioning time from several days to minutes. Infrastructure managed with Terraform and PowerShell, CI/CD with GitLab." },
+      { date: "Apr 2024 — Jun 2024", title: "Sr. DevOps Engineer", company: "Nubiral", description: "Intensive project on Microsoft Azure: VM deployment and configuration, infrastructure management with ARM templates, CI/CD pipelines with Azure DevOps, and deployment flow automation." },
+      { date: "Oct 2021 — Apr 2024", title: "DevOps Engineer — SRE", company: "Techunting · Project: Particle 41", description: "SRE responsible for bridging development and operations. Automation and scalability on AWS and Azure using Harness, Helm, Kubernetes, Terraform, GitHub Actions, Jenkins, CloudFormation, EKS, and Azure DevOps." },
+      { date: "Jan 2021 — Oct 2021", title: "Infrastructure Engineer | DevOps", company: "SanCor Salud", description: "SRE in charge of application development processes, automation, and deployment consistency. Stack: Docker, Kubernetes, OpenShift, Jenkins, GitHub, AWS, and scripting." },
+      { date: "Sep 2010 — Jan 2021", title: "Support Lead | Labs", company: "Penta Security Solutions", description: "10 years leading technical support and infrastructure. Expertise in environment security, virtualization, databases (SQL Server, MySQL, Oracle), Windows Server, Linux/Unix, and Active Directory." },
+      { date: "May 2008 — Aug 2010", title: "Support Analyst L1 / L2", company: "Hewlett Packard Enterprise", description: "Technical support for enterprise clients: Banco Santander RÍO, Molinos Río de la Plata, PepsiCo Southern Cone, and Pfizer." },
+    ],
+    skills: [
+      { group: "Cloud", tags: ["AWS", "Azure", "Oracle Cloud", "EKS", "CloudFormation", "ARM Templates"] },
+      { group: "Containers & Orchestration", tags: ["Kubernetes", "Docker", "OpenShift", "Helm"] },
+      { group: "CI/CD & Automation", tags: ["Terraform", "GitHub Actions", "Jenkins", "Harness", "Azure DevOps", "GitLab CI"] },
+      { group: "Systems & Scripting", tags: ["Linux", "Windows Server", "PowerShell", "Bash", "Active Directory"] },
+      { group: "Databases", tags: ["SQL Server", "MySQL", "Oracle"] },
+      { group: "Soft Skills", tags: ["Technical leadership", "Scrum Master", "Adaptability", "Continuous improvement"] },
+    ],
+    certifications: [
+      "Microsoft Certified: Azure Fundamentals",
+      "Certified Kubernetes Administrator (CKA)",
+      "HashiCorp Terraform Associate",
+      "Scrum Master — Agile Methodologies",
+      "Introduction to Oracle Cloud Essentials",
+    ],
+    languages: [
+      { lang: "Spanish", level: "Native", pct: 100 },
+      { lang: "English", level: "B2 — Professional Working Proficiency", pct: 72 },
+    ],
+    education: [
+      { year: "2017 — 2020", title: "Higher Technician in Software Development", institution: "Instituto Superior Pascal" },
+      { year: "2001 — 2004", title: "Bachelor in Social Communication and Media", institution: "CENS 451" },
+    ],
+    contact: {
+      email: "caceresabelanibal@gmail.com",
+      phone: "+54 351 286 9149",
+      location: "La Falda, Córdoba, Argentina",
+      linkedin: "https://www.linkedin.com/in/abelanibalcaceres",
+    },
+  },
+};
+
+// ─── TESTIMONIALS DATA ──────────────────────────────────────────────────────
+const TESTIMONIALS = {
+  es: [
+    { text: "Aníbal es un fantástico jugador de equipo y un gran activo para cualquier equipo DevOps. Siempre dispuesto a asumir tareas, buscando proactivamente ayuda cuando era necesario para asegurar una ejecución eficiente.", name: "Pritesh Kalantri", role: "Cloud Architect | Founder @ Helyx", date: "Enero 2025" },
+    { text: "Recomiendo a Aníbal para roles en Kubernetes y DevOps. Sus contribuciones fueron clave en nuestro despliegue multi-región de servicios Kubernetes en AWS EKS. Completó las tareas asignadas con precisión y rápidamente se volvió experto en nuestros pipelines de Harness.", name: "Ken Goodridge", role: "Principal Software Engineer @ EBSCO", date: "Abril 2024" },
+    { text: "Un excelente profesional y persona, muy a gusto trabajando en equipo y de forma colaborativa. Destaco su compromiso, sus ganas de aprender y su buen humor, incluso en situaciones de crisis.", name: "Diego Terre", role: "Líder de Ciberseguridad @ SanCor Salud", date: "Marzo 2024" },
+    { text: "Trabajé con Aníbal hace varios años y puedo decir que tiene mente abierta y entiende las necesidades del negocio. Siempre busca formas alternativas de resolver problemas. No le teme al trabajo duro y tiene buenas habilidades de resolución de problemas.", name: "Mauro Bozzi", role: "Arquitectura de Seguridad | CISSP · CISM · CISA", date: "Febrero 2024" },
+    { text: "Tuve la fortuna de trabajar con Abel en Penta Security Solutions. Es un excelente profesional y compañero. Una persona atenta, dedicada, prolija y con un gran poder de resolución a cualquier tipo de problemáticas.", name: "Yesica Fernández", role: "Technical Manager | Payments @ Uala", date: "Junio 2021" },
+    { text: "Fue un placer trabajar con Aníbal. Es una persona muy responsable y siempre dispuesta a ayudar a resolver cada situación. Si no sabe algo, encontrará la manera.", name: "Amalia Sciutto", role: "CMO & CybOps Director, Co-Founder PSS/ABX", date: "Abril 2021" },
+    { text: "Su calidad, tanto como profesional como en lo personal, hicieron que haya sido un placer trabajar juntos. Es altamente recomendable para trabajos de IT, en análisis, desarrollo y resolución de problemas.", name: "Nicolás Fernando Trujillo", role: "Sr Project Manager | PMP® ITIL® PMI-ACP®", date: "Enero 2019" },
+    { text: "Aníbal es genial para trabajar. Es un experto en administración Microsoft, su inglés es sólido, su actitud es excelente y es confiable.", name: "Eric Napier", role: "Software Engineer", date: "Enero 2017" },
+    { text: "Aníbal es un excelente profesional de IT, muy experimentado y con un profundo conocimiento técnico. Su capacidad de liderazgo y su habilidad para trabajar en equipo son sobresalientes.", name: "Sam Elliott", role: "SVP Product Management @ BeyondTrust", date: "Enero 2017" },
+  ],
+  en: [
+    { text: "Anibal is a fantastic team player and a great asset to any DevOps team! He was always eager to take on DevOps tasks, proactively seeking assistance when needed to ensure everything was executed efficiently.", name: "Pritesh Kalantri", role: "Cloud Architect | Founder @ Helyx", date: "January 2025" },
+    { text: "I recommend Aníbal for roles focusing on Kubernetes and DevOps. His contributions were key to our multi-region deployment of Kubernetes services on AWS EKS. He consistently completed tasks with accuracy and quickly became proficient in our Harness deployment pipelines.", name: "Ken Goodridge", role: "Principal Software Engineer @ EBSCO", date: "April 2024" },
+    { text: "An excellent professional and person, very comfortable working as a team and collaboratively. I highlight his commitment, his eagerness to learn, and his good humor, even in crisis situations.", name: "Diego Terre", role: "Cybersecurity Lead @ SanCor Salud", date: "March 2024" },
+    { text: "I worked with Anibal several years ago and I can say that he has an open mind and understands the business needs. He looks always for alternate ways to solve issues. He is not afraid of hard work and has good problem solving skills.", name: "Mauro Bozzi", role: "Security Architecture | CISSP · CISM · CISA", date: "February 2024" },
+    { text: "I had the fortune of working with Abel at Penta Security Solutions. He is an excellent professional and colleague — attentive, dedicated, thorough, and with a great ability to resolve any kind of issue.", name: "Yesica Fernández", role: "Technical Manager | Payments @ Uala", date: "June 2021" },
+    { text: "It was a pleasure working with Anibal. He is a very responsible person, and he is always willing to help to resolve every situation. If he doesn't know he will find the way.", name: "Amalia Sciutto", role: "CMO & CybOps Director, Co-Founder PSS/ABX", date: "April 2021" },
+    { text: "His quality, both as a professional and as a person, made it a pleasure to work together. Highly recommended for IT work — analysis, development, and problem-solving.", name: "Nicolás Fernando Trujillo", role: "Sr Project Manager | PMP® ITIL® PMI-ACP®", date: "January 2019" },
+    { text: "Anibal is great to work with. He is an expert on Microsoft administration, his English is strong, his attitude is stellar, and he is dependable. I am glad to have him on my team.", name: "Eric Napier", role: "Software Engineer", date: "January 2017" },
+    { text: "Anibal is an excellent IT professional. He is highly experienced and has a deep technical knowledge. His training and technical analysis are outstanding, so is his ability to lead and work with a team.", name: "Sam Elliott", role: "SVP Product Management @ BeyondTrust", date: "January 2017" },
+  ],
+};
+
+// ─── CURSOR PERSONALIZADO ───────────────────────────────────────────────────
+(function initCursor() {
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  window.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    setTimeout(() => {
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+    }, 80);
+  });
+})();
+
+// ─── FADE-IN AL HACER SCROLL ────────────────────────────────────────────────
+let fadeObserver;
+function initFadeIns() {
+  if (fadeObserver) fadeObserver.disconnect();
+  fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '-60px' });
+  document.querySelectorAll('.fade-in').forEach((el, i) => {
+    el.style.transitionDelay = (i % 6) * 0.08 + 's';
+    fadeObserver.observe(el);
+  });
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────
+let lang = 'es';
+
+function render() {
+  const t = CONTENT[lang];
+
+  document.documentElement.lang = lang;
+
+  const navLinks = document.getElementById('navLinks');
+  navLinks.innerHTML = t.nav.map((label, i) => `<li><a href="${t.navHrefs[i]}">${label}</a></li>`).join('');
+
+  document.getElementById('heroTag').textContent = t.subtitle;
+  document.getElementById('heroDesc').textContent = t.description;
+  document.getElementById('heroCta1').textContent = t.heroCta1;
+  document.getElementById('heroCta2').textContent = t.heroCta2;
+
+  document.getElementById('labelAbout').textContent = t.sectionAbout;
+  document.getElementById('aboutText').innerHTML = t.about.map(p => `<p>${p}</p>`).join('');
+  document.getElementById('aboutStats').innerHTML = t.stats.map(s =>
+    `<div class="stat-item fade-in"><div class="stat-number">${s.number}</div><div class="stat-label">${s.label}</div></div>`
+  ).join('');
+
+  document.getElementById('labelExp').textContent = t.sectionExp;
+  document.getElementById('timeline').innerHTML = t.experience.map(item => `
+    <div class="timeline-item fade-in">
+      <div class="timeline-date">${item.date}</div>
+      <div class="timeline-title">${item.title}</div>
+      <div class="timeline-company">${item.company}</div>
+      <div class="timeline-desc">${item.description}</div>
+    </div>`).join('');
+
+  document.getElementById('labelSkills').textContent = t.sectionSkills;
+  document.getElementById('skillsGrid').innerHTML = t.skills.map(group => `
+    <div class="skill-group fade-in">
+      <div class="skill-group-title">${group.group}</div>
+      <div class="skill-tags">${group.tags.map(tag => `<span class="skill-tag">${tag}</span>`).join('')}</div>
+    </div>`).join('');
+  document.getElementById('labelCerts').textContent = t.sectionCerts;
+  document.getElementById('certList').innerHTML = t.certifications.map(cert =>
+    `<div class="cert-item fade-in"><span class="cert-dot">▸</span> ${cert}</div>`
+  ).join('');
+
+  document.getElementById('labelLang').textContent = t.sectionLang;
+  document.getElementById('langList').innerHTML = t.languages.map(item => `
+    <div class="lang-item fade-in">
+      <div class="lang-header"><span class="lang-name">${item.lang}</span><span class="lang-level">${item.level}</span></div>
+      <div class="lang-bar-bg"><div class="lang-bar-fill" data-pct="${item.pct}"></div></div>
+    </div>`).join('');
+
+  document.getElementById('labelEdu').textContent = t.sectionEdu;
+  document.getElementById('eduGrid').innerHTML = t.education.map(item => `
+    <div class="edu-card fade-in">
+      <div class="edu-year">${item.year}</div>
+      <div class="edu-title">${item.title}</div>
+      <div class="edu-institution">${item.institution}</div>
+    </div>`).join('');
+
+  document.getElementById('labelRefs').textContent = t.sectionRefs;
+  const testimonials = TESTIMONIALS[lang];
+  const doubled = [...testimonials, ...testimonials];
+  document.getElementById('testimonialsTrack').innerHTML = doubled.map(item => `
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">${item.text}</p>
+      <div class="testimonial-author">
+        <span class="testimonial-name">${item.name}</span>
+        <span class="testimonial-role">${item.role}</span>
+        <span class="testimonial-date">${item.date}</span>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('contactTitle').innerHTML = `${t.contactTitle} <em>${t.contactTitleEm}</em>`;
+  document.getElementById('contactText').textContent = t.contactText;
+  const contactBtn = document.getElementById('contactBtn');
+  contactBtn.textContent = t.contactBtn;
+  contactBtn.href = `mailto:${t.contact.email}`;
+  document.getElementById('contactLinks').innerHTML = `
+    <a href="mailto:${t.contact.email}" class="contact-link">${ICONS.mail} ${t.contact.email}</a>
+    <a href="tel:${t.contact.phone}" class="contact-link">${ICONS.phone} ${t.contact.phone}</a>
+    <span class="contact-link">${ICONS.pin} ${t.contact.location}</span>
+    <a href="${t.contact.linkedin}" target="_blank" rel="noreferrer" class="contact-link">${ICONS.linkedin} linkedin.com/in/abelanibalcaceres ${ICONS.external}</a>
+  `;
+
+  document.getElementById('footerText').textContent = `© ${new Date().getFullYear()} ${t.footerText}`;
+
+  initFadeIns();
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.lang-bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  });
+}
+
+document.getElementById('langSwitch').addEventListener('click', () => {
+  lang = lang === 'es' ? 'en' : 'es';
+  const btn = document.getElementById('langSwitch');
+  btn.classList.toggle('lang-es', lang === 'es');
+  btn.classList.toggle('lang-en', lang === 'en');
+  render();
+});
+
+render();
+</script>
+</body>
 </html>
