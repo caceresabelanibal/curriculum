@@ -189,6 +189,16 @@ nav {
   mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 40%, transparent 100%);
 }
 
+/* Mission */
+.mission-lead {
+  font-family: 'Cormorant', serif; font-weight: 500; font-style: italic;
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem); line-height: 1.55;
+  color: var(--text); max-width: 760px; margin-bottom: 2rem;
+  border-left: 2px solid var(--accent); padding-left: 1.5rem;
+}
+.mission-body { font-size: 1rem; color: var(--text-soft); line-height: 1.9; max-width: 760px; }
+.mission-body p + p { margin-top: 1.25rem; }
+
 /* Sections */
 section { padding: 6rem 2rem; }
 .section-label {
@@ -497,6 +507,14 @@ footer {
     </div>
   </section>
 
+  <section id="mision">
+    <div class="container">
+      <div class="section-label fade-in" id="labelMission"></div>
+      <p class="mission-lead fade-in" id="missionLead"></p>
+      <div class="mission-body fade-in" id="missionBody"></div>
+    </div>
+  </section>
+
   <section id="sobre-mi">
     <div class="container">
       <div class="section-label fade-in" id="labelAbout"></div>
@@ -606,12 +624,19 @@ const LOGOS = {
 // ─── CONTENIDO BILINGÜE ─────────────────────────────────────────────────────
 const CONTENT = {
   es: {
-    nav: ["Sobre mí", "Experiencia", "Casos de Éxito", "Proyectos", "Skills", "Educación", "Contacto"],
-    navHrefs: ["#sobre-mi", "#experiencia", "#casos-exito", "#proyectos", "#skills", "#educacion", "#contacto"],
+    nav: ["Propósito", "Sobre mí", "Experiencia", "Casos de Éxito", "Proyectos", "Skills", "Educación", "Contacto"],
+    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#proyectos", "#skills", "#educacion", "#contacto"],
     subtitle: "C.T.O · Líder Tecnológico en Infraestructura Crítica, Cloud & Automatización",
     description: "Más de 15 años liderando la transformación de infraestructuras críticas para organizaciones de los sectores financiero y de salud — combinando visión estratégica, automatización a escala y arquitecturas cloud resilientes para acelerar resultados de negocio.",
     heroCta1: "Contactame",
     heroCta2: "Ver LinkedIn",
+    sectionMission: "Propósito Profesional",
+    missionLead: "Mi propósito a largo plazo es diseñar y liderar plataformas de infraestructura crítica — cloud-native, automatizadas y cada vez más asistidas por inteligencia artificial — que hagan más resiliente, segura y eficiente la operación de organizaciones financieras, de salud y del sector público.",
+    missionBody: [
+      "Los últimos 15 años los construí sobre una misma idea: la infraestructura que sostiene servicios esenciales —transacciones financieras, atención médica, operaciones críticas— no puede depender de procesos manuales, frágiles o inseguros. Como SRE y líder de DevOps trabajé de cerca con esa realidad en Nasdaq, una de las infraestructuras de mercados financieros más críticas del mundo, y en SanCor Salud, una aseguradora que sostiene la atención de millones de personas. En ambos casos, automatizar y asegurar esos entornos no fue una mejora técnica menor: fue la diferencia entre un sistema que responde en minutos y uno que puede fallar cuando más se lo necesita.",
+      "Esa convicción me llevó a fundar Morph Analytics, donde hoy dirijo el desarrollo de infraestructura segura y automatizada para organizaciones que muchas veces no tienen acceso a los recursos de seguridad reservados a las grandes corporaciones. Con VulneraTrack construimos una herramienta propia para que los equipos de seguridad puedan anticiparse a las vulnerabilidades antes de que se conviertan en incidentes — un problema que hoy afecta por igual a bancos, hospitales y agencias públicas.",
+      "De cara a los próximos años, mi objetivo es profundizar ese trabajo incorporando inteligencia artificial aplicada a la observabilidad, la detección temprana de riesgos y la toma de decisiones de infraestructura, para que la resiliencia de los sistemas críticos deje de depender exclusivamente de la capacidad humana de reacción y empiece a anticiparse. Creo que ese es, hoy, uno de los desafíos tecnológicos más relevantes para cualquier país que dependa de infraestructura financiera, sanitaria y pública funcionando de forma continua y segura.",
+    ],
     sectionAbout: "Sobre mí",
     sectionExp: "Experiencia",
     sectionCases: "Casos de Éxito",
@@ -713,12 +738,19 @@ const CONTENT = {
     },
   },
   en: {
-    nav: ["About", "Experience", "Success Stories", "Projects", "Skills", "Education", "Contact"],
-    navHrefs: ["#sobre-mi", "#experiencia", "#casos-exito", "#proyectos", "#skills", "#educacion", "#contacto"],
+    nav: ["Mission", "About", "Experience", "Success Stories", "Projects", "Skills", "Education", "Contact"],
+    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#proyectos", "#skills", "#educacion", "#contacto"],
     subtitle: "C.T.O · Technology Leader in Critical Infrastructure, Cloud & Automation",
     description: "15+ years leading the transformation of critical infrastructure for financial and healthcare organizations — combining strategic vision, automation at scale, and resilient cloud architecture to accelerate business outcomes.",
     heroCta1: "Contact me",
     heroCta2: "View LinkedIn",
+    sectionMission: "Professional Mission",
+    missionLead: "My long-term endeavor is to design and lead critical infrastructure platforms — cloud-native, automated, and increasingly assisted by artificial intelligence — that make the operations of financial, healthcare, and public-sector organizations more resilient, secure, and efficient.",
+    missionBody: [
+      "The last 15 years were built on one core idea: the infrastructure that sustains essential services — financial transactions, healthcare delivery, critical operations — cannot depend on manual, fragile, or insecure processes. As an SRE and DevOps leader, I worked closely with that reality at Nasdaq, one of the world's most critical financial markets infrastructures, and at SanCor Salud, a health insurer sustaining care for millions of people. In both cases, automating and securing those environments wasn't a minor technical improvement — it was the difference between a system that responds in minutes and one that can fail exactly when it's needed most.",
+      "That conviction led me to found Morph Analytics, where I now lead the development of secure, automated infrastructure for organizations that often lack access to the security resources reserved for large corporations. With VulneraTrack, we built our own tool so security teams can get ahead of vulnerabilities before they become incidents — a problem that today affects banks, hospitals, and public agencies alike.",
+      "Looking ahead, my goal is to deepen this work by applying artificial intelligence to observability, early risk detection, and infrastructure decision-making, so the resilience of critical systems stops depending solely on human reaction time and starts anticipating failure. I believe this is, today, one of the most relevant technological challenges for any country that relies on financial, healthcare, and public infrastructure running continuously and securely.",
+    ],
     sectionAbout: "About me",
     sectionExp: "Experience",
     sectionCases: "Success Stories",
@@ -895,6 +927,10 @@ function render() {
   document.getElementById('heroDesc').textContent = t.description;
   document.getElementById('heroCta1').textContent = t.heroCta1;
   document.getElementById('heroCta2').textContent = t.heroCta2;
+
+  document.getElementById('labelMission').textContent = t.sectionMission;
+  document.getElementById('missionLead').textContent = t.missionLead;
+  document.getElementById('missionBody').innerHTML = t.missionBody.map(p => `<p>${p}</p>`).join('');
 
   document.getElementById('labelAbout').textContent = t.sectionAbout;
   document.getElementById('aboutText').innerHTML = t.about.map(p => `<p>${p}</p>`).join('');
