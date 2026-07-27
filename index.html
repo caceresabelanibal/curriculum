@@ -238,6 +238,34 @@ section { padding: 6rem 2rem; }
 .timeline-company { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
 .timeline-desc { font-size: 0.92rem; color: var(--text-soft); line-height: 1.8; }
 
+/* Projects */
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.project-card {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 1.75rem; border-radius: var(--radius);
+  transition: border-color 0.3s, transform 0.3s;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.project-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.project-logo { height: 40px; display: flex; align-items: center; }
+.project-logo img { height: 32px; width: auto; object-fit: contain; }
+.project-logo-text {
+  font-family: 'Cormorant', serif; font-size: 1.15rem; font-weight: 600;
+  letter-spacing: 0.02em; color: var(--text);
+}
+.project-logo-text b { color: var(--accent); }
+.project-name { font-family: 'Cormorant', serif; font-size: 1.25rem; font-weight: 600; }
+.project-role { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-top: 0.2rem; }
+.project-desc { font-size: 0.88rem; color: var(--text-soft); line-height: 1.75; flex: 1; }
+.project-link {
+  font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-soft); text-decoration: none;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  transition: color 0.2s; padding-top: 0.5rem; border-top: 1px solid var(--border);
+}
+.project-link:hover { color: var(--accent); }
+.project-link svg { flex-shrink: 0; }
+
 /* Skills */
 .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
 .skill-group {
@@ -470,6 +498,13 @@ footer {
     </div>
   </section>
 
+  <section id="proyectos">
+    <div class="container">
+      <div class="section-label fade-in" id="labelProjects"></div>
+      <div class="projects-grid" id="projectsGrid"></div>
+    </div>
+  </section>
+
   <section id="skills">
     <div class="container">
       <div class="section-label fade-in" id="labelSkills"></div>
@@ -530,17 +565,33 @@ const ICONS = {
   external: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>',
 };
 
+// ─── LOGOS DE PROYECTOS ─────────────────────────────────────────────────────
+const LOGOS = {
+  morph: '<div class="project-logo-text">MORPH<b>.</b>ANALYTICS</div>',
+  vulneratrack: `<svg height="32" viewBox="0 0 240 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VulneraTrack">
+    <defs><linearGradient id="vtg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#6366f1"/>
+    </linearGradient></defs>
+    <path d="M24 3 L42 10 V24 C42 35 34 42 24 45 C14 42 6 35 6 24 V10 Z" fill="url(#vtg)"/>
+    <path d="M24 7 L38 12.5 V24 C38 32.6 32 38.4 24 41 C16 38.4 10 32.6 10 24 V12.5 Z" fill="#0f172a"/>
+    <polyline points="12,26 18,26 21,18 25,32 28,23 30,26 36,26" fill="none" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="52" y="31" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" letter-spacing="-0.5" fill="#f0ece4">Vulnera<tspan fill="#22d3ee">Track</tspan></text>
+  </svg>`,
+  taninzu: '<img src="taninzu-logo.png" alt="Taninzu" />',
+};
+
 // ─── CONTENIDO BILINGÜE ─────────────────────────────────────────────────────
 const CONTENT = {
   es: {
-    nav: ["Sobre mí", "Experiencia", "Skills", "Educación", "Contacto"],
-    navHrefs: ["#sobre-mi", "#experiencia", "#skills", "#educacion", "#contacto"],
+    nav: ["Sobre mí", "Experiencia", "Proyectos", "Skills", "Educación", "Contacto"],
+    navHrefs: ["#sobre-mi", "#experiencia", "#proyectos", "#skills", "#educacion", "#contacto"],
     subtitle: "C.T.O · Líder Tecnológico en Infraestructura Crítica, Cloud & Automatización",
     description: "Más de 15 años liderando la transformación de infraestructuras críticas para organizaciones de los sectores financiero y de salud — combinando visión estratégica, automatización a escala y arquitecturas cloud resilientes para acelerar resultados de negocio.",
     heroCta1: "Contactame",
     heroCta2: "Ver LinkedIn",
     sectionAbout: "Sobre mí",
     sectionExp: "Experiencia",
+    sectionProjects: "Proyectos & Emprendimientos",
     sectionSkills: "Skills & Stack",
     sectionCerts: "Certificaciones",
     sectionEdu: "Educación",
@@ -569,6 +620,29 @@ const CONTENT = {
       { date: "Ene 2021 — Oct 2021", title: "Ingeniero de Infraestructura | DevOps", company: "SanCor Salud", description: "Como SRE en una de las principales aseguradoras de salud de Argentina, fui responsable de la automatización y consistencia de los despliegues de aplicaciones críticas para la atención de millones de afiliados, utilizando Docker, Kubernetes, OpenShift, Jenkins, GitHub y AWS." },
       { date: "Sep 2010 — Ene 2021", title: "Líder de Soporte | Laboratorios", company: "Penta Security Solutions", description: "Lideré durante 10 años el soporte técnico y la infraestructura de la organización, especializándome en seguridad de entornos, virtualización, bases de datos (SQL Server, MySQL, Oracle), Windows Server, Linux/Unix y Active Directory — formando y guiando a nuevos analistas a lo largo de la década." },
       { date: "May 2008 — Ago 2010", title: "Analista de Soporte N1 / N2", company: "Hewlett Packard Enterprise", description: "Brindé soporte técnico a clientes enterprise de primer nivel — Banco Santander Río, Molinos Río de la Plata, PepsiCo Cono Sur y Pfizer — sentando las bases de mi trayectoria en infraestructura crítica." },
+    ],
+    projects: [
+      {
+        name: "Morph Analytics",
+        role: "Fundador & CEO",
+        logo: "morph",
+        url: "https://morphanalytics.com.ar/",
+        description: "Fundé y dirijo Morph Analytics, una consultora tecnológica con sede en Córdoba que diseña, desarrolla y asegura infraestructura crítica para organizaciones de distintos tamaños. Integramos desarrollo de software a medida, automatización DevOps (CI/CD, contenedores, Kubernetes, infraestructura como código) y ciberseguridad (auditorías, monitoreo continuo de vulnerabilidades y respuesta a incidentes) bajo una misma misión: infraestructura más segura y operaciones más eficientes.",
+      },
+      {
+        name: "VulneraTrack",
+        role: "Producto propio · En producción",
+        logo: "vulneratrack",
+        url: "https://vulneratrack.com",
+        description: "Plataforma de gestión de vulnerabilidades desarrollada por Morph Analytics: centraliza el seguimiento de amenazas del NVD (National Vulnerability Database) y el estado de certificados a lo largo de toda la infraestructura de una organización, dando a los equipos de seguridad visibilidad continua para priorizar y responder antes de que una vulnerabilidad se convierta en un incidente.",
+      },
+      {
+        name: "Taninzu",
+        role: "Producto propio · En producción",
+        logo: "taninzu",
+        url: "https://taninzu.com",
+        description: "Plataforma desarrollada por Morph Analytics que digitaliza por completo la organización de torneos de Jiu-Jitsu: brackets inteligentes con byes automáticos, panel de árbitros con cronómetro y proyección en pantalla grande, rankings configurables por cinturón/peso/edad y certificados en PDF con verificación de seguridad — permitiendo a una academia organizar un torneo completo en minutos.",
+      },
     ],
     skills: [
       { group: "Cloud", tags: ["AWS", "Azure", "Oracle Cloud", "EKS", "CloudFormation", "ARM Templates"] },
@@ -601,14 +675,15 @@ const CONTENT = {
     },
   },
   en: {
-    nav: ["About", "Experience", "Skills", "Education", "Contact"],
-    navHrefs: ["#sobre-mi", "#experiencia", "#skills", "#educacion", "#contacto"],
+    nav: ["About", "Experience", "Projects", "Skills", "Education", "Contact"],
+    navHrefs: ["#sobre-mi", "#experiencia", "#proyectos", "#skills", "#educacion", "#contacto"],
     subtitle: "C.T.O · Technology Leader in Critical Infrastructure, Cloud & Automation",
     description: "15+ years leading the transformation of critical infrastructure for financial and healthcare organizations — combining strategic vision, automation at scale, and resilient cloud architecture to accelerate business outcomes.",
     heroCta1: "Contact me",
     heroCta2: "View LinkedIn",
     sectionAbout: "About me",
     sectionExp: "Experience",
+    sectionProjects: "Projects & Ventures",
     sectionSkills: "Skills & Stack",
     sectionCerts: "Certifications",
     sectionEdu: "Education",
@@ -637,6 +712,29 @@ const CONTENT = {
       { date: "Jan 2021 — Oct 2021", title: "Infrastructure Engineer | DevOps", company: "SanCor Salud", description: "As SRE at one of Argentina's leading health insurance providers, I was responsible for the automation and consistency of application deployments critical to the care of millions of members, using Docker, Kubernetes, OpenShift, Jenkins, GitHub, and AWS." },
       { date: "Sep 2010 — Jan 2021", title: "Support Lead | Labs", company: "Penta Security Solutions", description: "For 10 years, I led the organization's technical support and infrastructure, specializing in environment security, virtualization, databases (SQL Server, MySQL, Oracle), Windows Server, Linux/Unix, and Active Directory — training and mentoring new analysts throughout the decade." },
       { date: "May 2008 — Aug 2010", title: "Support Analyst L1 / L2", company: "Hewlett Packard Enterprise", description: "Provided technical support to top-tier enterprise clients — Banco Santander Río, Molinos Río de la Plata, PepsiCo Southern Cone, and Pfizer — laying the foundation of my career in critical infrastructure." },
+    ],
+    projects: [
+      {
+        name: "Morph Analytics",
+        role: "Founder & CEO",
+        logo: "morph",
+        url: "https://morphanalytics.com.ar/",
+        description: "I founded and lead Morph Analytics, a Córdoba-based technology consultancy that designs, builds, and secures critical infrastructure for organizations of all sizes. We combine custom software development, DevOps automation (CI/CD, containers, Kubernetes, infrastructure as code), and cybersecurity (audits, continuous vulnerability monitoring, and incident response) under one mission: more secure infrastructure and more efficient operations.",
+      },
+      {
+        name: "VulneraTrack",
+        role: "Own product · In production",
+        logo: "vulneratrack",
+        url: "https://vulneratrack.com",
+        description: "A vulnerability management platform built by Morph Analytics: it centralizes NVD (National Vulnerability Database) threat tracking and certificate monitoring across an organization's entire infrastructure, giving security teams continuous visibility to prioritize and respond before a vulnerability becomes an incident.",
+      },
+      {
+        name: "Taninzu",
+        role: "Own product · In production",
+        logo: "taninzu",
+        url: "https://taninzu.com",
+        description: "A platform built by Morph Analytics that fully digitizes the organization of Brazilian Jiu-Jitsu tournaments: intelligent brackets with automatic byes, a referee control panel with scoring/timer and large-screen projection, configurable rankings by belt/weight/age, and PDF certificates with security verification — letting an academy run a full tournament in minutes.",
+      },
     ],
     skills: [
       { group: "Cloud", tags: ["AWS", "Azure", "Oracle Cloud", "EKS", "CloudFormation", "ARM Templates"] },
@@ -758,6 +856,19 @@ function render() {
       <div class="timeline-title">${item.title}</div>
       <div class="timeline-company">${item.company}</div>
       <div class="timeline-desc">${item.description}</div>
+    </div>`).join('');
+
+  document.getElementById('labelProjects').textContent = t.sectionProjects;
+  const visitLabel = lang === 'es' ? 'Visitar sitio' : 'Visit site';
+  document.getElementById('projectsGrid').innerHTML = t.projects.map(p => `
+    <div class="project-card fade-in">
+      <div class="project-logo">${LOGOS[p.logo]}</div>
+      <div>
+        <div class="project-name">${p.name}</div>
+        <div class="project-role">${p.role}</div>
+      </div>
+      <p class="project-desc">${p.description}</p>
+      <a href="${p.url}" target="_blank" rel="noreferrer" class="project-link">${visitLabel} ${ICONS.external}</a>
     </div>`).join('');
 
   document.getElementById('labelSkills').textContent = t.sectionSkills;
