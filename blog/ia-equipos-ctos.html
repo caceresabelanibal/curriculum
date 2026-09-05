@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IA en el equipo: cómo un CTO puede avanzar sin soltar el control — Abel Aníbal Cáceres</title>
+<meta name="description" content="Un framework de adopción gradual de IA para CTOs: ni delegar todo el desarrollo a un modelo, ni ignorar su existencia. Cuatro fases, y el control humano que nunca se negocia." />
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #161616;
+  --border: #2a2a2a;
+  --accent: #c9a84c;
+  --accent-dim: rgba(201, 168, 76, 0.12);
+  --text: #f0ece4;
+  --text-muted: #7a7570;
+  --text-soft: #b8b0a4;
+  --radius: 4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  cursor: none;
+}
+
+/* Cursor */
+.cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--accent); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease;
+}
+.cursor-ring {
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(201,168,76,0.4); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.15s ease;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.5rem 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(to bottom, rgba(13,13,13,0.95), transparent);
+  backdrop-filter: blur(8px);
+}
+.nav-back {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  color: var(--text-muted); text-decoration: none;
+  font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-back:hover { color: var(--accent); }
+.nav-back svg { flex-shrink: 0; }
+
+.lang-switch {
+  display: flex; align-items: center; gap: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 6px;
+  cursor: none; position: relative;
+  transition: border-color 0.3s;
+}
+.lang-switch:hover { border-color: var(--accent); }
+.lang-option {
+  font-size: 0.68rem; font-weight: 500;
+  letter-spacing: 0.1em; padding: 3px 8px;
+  border-radius: 14px; z-index: 1; position: relative;
+  transition: color 0.3s;
+  color: var(--text-muted);
+}
+.lang-switch.lang-es .lang-option:first-child,
+.lang-switch.lang-en .lang-option:last-child {
+  color: #0d0d0d;
+}
+.lang-slider {
+  position: absolute;
+  width: 34px; height: 26px;
+  background: var(--accent); border-radius: 14px;
+  transition: left 0.3s cubic-bezier(0.22,1,0.36,1);
+  top: 50%; transform: translateY(-50%);
+}
+.lang-switch.lang-es .lang-slider { left: 5px; }
+.lang-switch.lang-en .lang-slider { left: calc(100% - 39px); }
+
+/* Fade-in */
+.fade-in {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Article header */
+.article-hero { padding: 8rem 2rem 2rem; }
+.article-container { max-width: 760px; margin: 0 auto; padding: 0 2rem; }
+.article-tag {
+  font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+}
+.article-tag::before { content: ''; width: 30px; height: 1px; background: var(--accent); }
+.article-title {
+  font-family: 'Cormorant', serif;
+  font-size: clamp(1.9rem, 4.5vw, 3rem);
+  font-weight: 300; line-height: 1.15;
+  letter-spacing: 0.03em; margin-bottom: 1.75rem;
+  animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.25s both;
+}
+.article-lead {
+  font-family: 'Cormorant', serif; font-weight: 500; font-style: italic;
+  font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.6;
+  color: var(--text); max-width: 720px; margin-bottom: 2.25rem;
+  border-left: 2px solid var(--accent); padding-left: 1.5rem;
+  animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.4s both;
+}
+.article-meta {
+  display: flex; flex-wrap: wrap; gap: 0.75rem 1.75rem;
+  font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.04em;
+  padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;
+  animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.55s both;
+}
+.article-meta strong { color: var(--text-soft); font-weight: 500; }
+
+/* Body */
+.article-body { font-size: 1.02rem; color: var(--text-soft); line-height: 1.95; padding: 1rem 0 5rem; }
+.article-body h2 {
+  font-family: 'Cormorant', serif; font-weight: 600; font-size: 1.6rem;
+  color: var(--text); margin: 3.25rem 0 1.25rem; letter-spacing: 0.01em;
+}
+.article-body .fade-in h2 { margin-top: 0; }
+.article-body p { margin-bottom: 1.35rem; }
+.article-body ul { margin: 0 0 1.5rem 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+.article-body li { position: relative; padding-left: 1.6rem; }
+.article-body li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); }
+.article-body ol { margin: 0 0 1.5rem 0; padding-left: 1.4rem; display: flex; flex-direction: column; gap: 0.85rem; }
+.article-body ol li::before { content: none; }
+.article-body strong { color: var(--text); font-weight: 500; }
+
+/* Graphic cards */
+.graphic-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 2.5rem 1.75rem 2rem; margin: 2rem 0 2.75rem;
+}
+.graphic-title {
+  font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 2.25rem; text-align: center;
+}
+.graphic-caption {
+  font-size: 0.8rem; color: var(--text-muted); text-align: center;
+  margin-top: 1.75rem; line-height: 1.7; max-width: 560px; margin-left: auto; margin-right: auto;
+}
+
+/* Graphic 1: maturity ladder */
+.maturity-ladder { position: relative; padding: 0.5rem 0 0.5rem; }
+.ladder-track { position: absolute; top: 22px; left: 12%; right: 12%; height: 2px; background: var(--border); z-index: 0; }
+.ladder-track-fill { height: 100%; width: 0; background: var(--accent); transition: width 1.8s cubic-bezier(0.22,1,0.36,1) 0.2s; }
+.maturity-ladder.visible .ladder-track-fill { width: 100%; }
+.ladder-steps { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+.ladder-step {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.7rem;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.ladder-step:nth-child(1) { transition-delay: 0.35s; }
+.ladder-step:nth-child(2) { transition-delay: 0.55s; }
+.ladder-step:nth-child(3) { transition-delay: 0.75s; }
+.ladder-step:nth-child(4) { transition-delay: 0.95s; }
+.maturity-ladder.visible .ladder-step { opacity: 1; transform: translateY(0); }
+.ladder-dot {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant', serif; font-size: 1.2rem; font-weight: 600; color: var(--accent);
+  position: relative;
+}
+.ladder-dot::after {
+  content: ''; position: absolute; inset: -6px; border-radius: 50%;
+  border: 1px solid var(--accent); opacity: 0;
+}
+.maturity-ladder.visible .ladder-step:nth-child(1) .ladder-dot::after { animation: pulseRing 2.6s ease-out 1.1s infinite; }
+.maturity-ladder.visible .ladder-step:nth-child(2) .ladder-dot::after { animation: pulseRing 2.6s ease-out 1.3s infinite; }
+.maturity-ladder.visible .ladder-step:nth-child(3) .ladder-dot::after { animation: pulseRing 2.6s ease-out 1.5s infinite; }
+.maturity-ladder.visible .ladder-step:nth-child(4) .ladder-dot::after { animation: pulseRing 2.6s ease-out 1.7s infinite; }
+@keyframes pulseRing {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.ladder-label { font-size: 0.86rem; font-weight: 500; color: var(--text); letter-spacing: 0.02em; }
+.ladder-desc { font-size: 0.76rem; color: var(--text-muted); line-height: 1.55; max-width: 150px; }
+
+@media (max-width: 640px) {
+  .ladder-track { display: none; }
+  .ladder-steps { grid-template-columns: 1fr; gap: 1.75rem; }
+}
+
+/* Graphic 2: autonomy bars */
+.autonomy-chart { display: flex; flex-direction: column; gap: 1.6rem; }
+.autonomy-row-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem;
+  margin-bottom: 0.55rem; flex-wrap: wrap;
+}
+.autonomy-phase { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+.autonomy-split { font-size: 0.76rem; color: var(--text-muted); letter-spacing: 0.02em; }
+.autonomy-bar-bg { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.autonomy-bar-fill {
+  height: 100%; background: var(--accent); border-radius: 4px; width: 0;
+  transition: width 1.4s cubic-bezier(0.22,1,0.36,1);
+}
+
+/* CTA */
+.article-cta {
+  margin-top: 1rem; padding: 2.5rem 2rem; text-align: center;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.article-cta-title { font-family: 'Cormorant', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.85rem; }
+.article-cta-text { color: var(--text-soft); font-size: 0.92rem; margin-bottom: 1.75rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+.btn-primary {
+  background: var(--accent); color: #0d0d0d;
+  padding: 0.75rem 1.75rem; font-size: 0.82rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border: none; border-radius: var(--radius);
+  text-decoration: none; cursor: none;
+  transition: opacity 0.2s, transform 0.2s;
+  display: inline-block;
+}
+.btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+footer {
+  padding: 2rem; text-align: center; border-top: 1px solid var(--border);
+  color: var(--text-muted); font-size: 0.78rem; letter-spacing: 0.05em;
+}
+footer a { color: var(--text-muted); }
+
+@media (pointer: coarse) {
+  body, .btn-primary, .lang-switch { cursor: auto; }
+  .cursor, .cursor-ring { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="../index.html#blog" class="nav-back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+    <span id="backLabel"></span>
+  </a>
+  <button class="lang-switch lang-es" id="langSwitch" aria-label="Switch language">
+    <span class="lang-option">ES</span>
+    <span class="lang-slider"></span>
+    <span class="lang-option">EN</span>
+  </button>
+</nav>
+
+<main>
+  <section class="article-hero">
+    <div class="article-container">
+      <div class="article-tag" id="articleTag"></div>
+      <h1 class="article-title" id="articleTitle"></h1>
+      <p class="article-lead" id="articleLead"></p>
+      <div class="article-meta" id="articleMeta"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="article-container">
+      <div class="article-body" id="articleBody"></div>
+
+      <div class="article-cta fade-in">
+        <div class="article-cta-title" id="ctaTitle"></div>
+        <p class="article-cta-text" id="ctaText"></p>
+        <a href="#" class="btn-primary" id="ctaBtn"></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p id="footerText"></p>
+</footer>
+
+<script>
+// ─── Gráfico 1: escalera de madurez ─────────────────────────────────────────
+const LADDER = {
+  es: [
+    { n: 1, label: "Observar", desc: "Exploración individual, sin integrarse al flujo oficial" },
+    { n: 2, label: "Asistir", desc: "Sugiere en el IDE y los PRs, decide el humano" },
+    { n: 3, label: "Co-crear", desc: "Genera borradores bajo especificación humana clara" },
+    { n: 4, label: "Delegar con supervisión", desc: "Tareas acotadas, revisión humana obligatoria antes de merge" },
+  ],
+  en: [
+    { n: 1, label: "Observe", desc: "Individual exploration, kept outside the official workflow" },
+    { n: 2, label: "Assist", desc: "Suggests inside the IDE and PRs, humans decide" },
+    { n: 3, label: "Co-create", desc: "Drafts code from clear human specs, pair-programmed" },
+    { n: 4, label: "Delegate with oversight", desc: "Narrow, low-risk tasks, mandatory human review before merge" },
+  ],
+};
+
+// ─── Gráfico 2: autonomía de IA vs control humano por fase ──────────────────
+const AUTONOMY = {
+  es: [
+    { phase: "Fase 1 · Observar", pct: 15, split: "15% IA · 85% control humano directo" },
+    { phase: "Fase 2 · Asistir", pct: 35, split: "35% IA · 65% control humano directo" },
+    { phase: "Fase 3 · Co-crear", pct: 55, split: "55% IA · 45% control humano directo" },
+    { phase: "Fase 4 · Delegar con supervisión", pct: 70, split: "70% IA · 30% control humano directo" },
+  ],
+  en: [
+    { phase: "Phase 1 · Observe", pct: 15, split: "15% AI · 85% direct human control" },
+    { phase: "Phase 2 · Assist", pct: 35, split: "35% AI · 65% direct human control" },
+    { phase: "Phase 3 · Co-create", pct: 55, split: "55% AI · 45% direct human control" },
+    { phase: "Phase 4 · Delegate with oversight", pct: 70, split: "70% AI · 30% direct human control" },
+  ],
+};
+
+function ladderHTML(lang) {
+  return `
+  <div class="graphic-card">
+    <div class="graphic-title">${lang === 'es' ? 'Camino de madurez de adopción' : 'Adoption maturity path'}</div>
+    <div class="maturity-ladder" id="maturityLadder">
+      <div class="ladder-track"><div class="ladder-track-fill"></div></div>
+      <div class="ladder-steps">
+        ${LADDER[lang].map(s => `
+          <div class="ladder-step">
+            <div class="ladder-dot">${s.n}</div>
+            <div class="ladder-label">${s.label}</div>
+            <div class="ladder-desc">${s.desc}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function autonomyHTML(lang) {
+  return `
+  <div class="graphic-card">
+    <div class="graphic-title">${lang === 'es' ? 'Autonomía delegada a la IA, por fase' : 'Autonomy delegated to AI, by phase'}</div>
+    <div class="autonomy-chart" id="autonomyChart">
+      ${AUTONOMY[lang].map(a => `
+        <div class="autonomy-row">
+          <div class="autonomy-row-head">
+            <span class="autonomy-phase">${a.phase}</span>
+            <span class="autonomy-split">${a.split}</span>
+          </div>
+          <div class="autonomy-bar-bg"><div class="autonomy-bar-fill" data-pct="${a.pct}"></div></div>
+        </div>`).join('')}
+    </div>
+    <p class="graphic-caption">${lang === 'es'
+      ? 'El control humano nunca llega a cero: incluso en la fase de delegación supervisada, ningún cambio llega a producción sin revisión y aprobación humana explícita.'
+      : "Human control never reaches zero: even in the delegate-with-oversight phase, no change reaches production without explicit human review and approval."}</p>
+  </div>`;
+}
+
+// ─── Contenido bilingüe ──────────────────────────────────────────────────────
+const CONTENT = {
+  es: {
+    backLabel: "Volver al portfolio",
+    tag: "Liderazgo Técnico · IA",
+    title: "IA en el equipo: cómo un CTO puede avanzar sin soltar el control",
+    lead: "Ni delegar todo el desarrollo a un modelo, ni fingir que la IA no está cambiando cómo escribimos software. El trabajo real de un CTO hoy es diseñar el ritmo de adopción — y el punto exacto donde el criterio humano no se negocia.",
+    author: "Abel Aníbal Cáceres",
+    role: "CTO",
+    date: "5 de septiembre de 2026",
+    readTime: "6 min de lectura",
+    ctaTitle: "¿Estás encarando esta misma discusión en tu equipo?",
+    ctaText: "Si querés comparar notas sobre adopción de IA, gobierno técnico o infraestructura crítica, escribime.",
+    ctaBtn: "Hablemos",
+    footerText: "Abel Aníbal Cáceres — La Falda, Córdoba, Argentina",
+    body: [
+      { h2: "El falso dilema" },
+      { p: "Para muchos CTOs, la conversación sobre IA generativa en el equipo de ingeniería quedó atrapada entre dos extremos igual de riesgosos. Uno es el entusiasmo sin freno: dejar que los agentes generen features completas, revisar poco y confiar en que \"ya va a mejorar\" con la próxima versión del modelo. El otro es la resistencia: tratar a la IA como una moda, prohibirla o simplemente ignorarla mientras el resto de la industria acelera. Ambos comparten el mismo error de base — tratan la adopción de IA como una decisión binaria, cuando en realidad es un proceso de maduración organizacional que se gestiona por etapas, con métricas propias y con salidas de emergencia bien definidas." },
+      { p: "Después de liderar equipos de infraestructura crítica en banca y salud, mi conclusión es simple: la pregunta correcta no es <strong>\"¿usamos IA o no?\"</strong>, sino <strong>\"¿en qué fase estamos, y qué control humano no estamos dispuestos a ceder en ninguna fase?\"</strong>" },
+
+      { h2: "El costo de delegar todo" },
+      { p: "Cuando un equipo delega el desarrollo casi por completo a la IA, los primeros síntomas no se ven en el código — se ven en las personas. La revisión de pull requests se vuelve un trámite: \"el CI pasó, la IA lo escribió bien, aprobado\". Los desarrolladores junior dejan de ejercitar el músculo de depurar un problema desde cero, porque siempre hay un asistente que propone una solución antes de que terminen de entender el síntoma. Y en infraestructura crítica —la que sostiene transacciones financieras o la atención de pacientes— esto es particularmente peligroso: el conocimiento sobre por qué se tomó una decisión de arquitectura empieza a vivir en un historial de prompts, no en la cabeza ni en la documentación del equipo que tiene que responder cuando algo falla a las tres de la mañana." },
+
+      { h2: "El costo de ignorarla" },
+      { p: "El extremo opuesto tiene un costo distinto, pero igual de real. Los equipos que prohíben o desalientan el uso de IA generativa terminan compitiendo en desventaja: tareas repetitivas que un asistente resuelve en minutos —boilerplate, migraciones de sintaxis, primeras versiones de tests— se siguen haciendo a mano, y el talento senior termina invirtiendo su tiempo más valioso en trabajo que ya no debería insumir horas. Además, ignorar la IA no la vuelve irrelevante para el negocio: los equipos de seguridad, observabilidad y soporte de la industria ya la están incorporando, y un CTO que se queda al margen pierde la posibilidad de moldear cómo se adopta, antes de que la adopción ocurra igual, sin gobierno." },
+
+      { h2: "Un camino gradual: cuatro fases, no un interruptor" },
+      { p: "La alternativa a ambos extremos es tratar la adopción de IA como cualquier otra capacidad organizacional nueva: con un camino de madurez explícito, medido y reversible." },
+      { graphic: "ladder" },
+      { p: "Ninguna organización tiene que atravesar las cuatro fases a la misma velocidad en todos sus equipos. Un equipo de plataforma que sostiene pagos puede estar en Fase 2 mientras un equipo de herramientas internas ya opera en Fase 4 — y eso es correcto, no una inconsistencia a corregir." },
+
+      { h2: "Lo que no negocio en ninguna fase" },
+      { p: "Por más avanzada que esté la adopción, hay líneas que en mi experiencia no se cruzan en infraestructura crítica:" },
+      { graphic: "autonomy" },
+      { ul: [
+        "Un humano revisa y aprueba cada cambio que llega a producción, sin excepción, sin importar quién —o qué— lo escribió.",
+        "Las decisiones de arquitectura y de seguridad se toman con y por personas, nunca por la sugerencia de un modelo.",
+        "La razón detrás de una decisión técnica queda documentada y es trazable a una persona responsable, no solo a un historial de prompts.",
+        "Todo código generado atraviesa los mismos gates de calidad que el código escrito a mano: tests, linters, revisión de seguridad, sin atajos.",
+        "El equipo conserva la capacidad de operar y depurar sistemas sin la herramienta de IA disponible — nunca se vuelve una dependencia crítica de un solo proveedor.",
+      ]},
+
+      { h2: "Checklist para esta semana" },
+      { ol: [
+        "Mapear en qué fase está hoy cada equipo — no toda la organización avanza al mismo ritmo, y eso está bien.",
+        "Escribir explícitamente qué tipo de cambios nunca se delegan sin revisión humana directa.",
+        "Instrumentar métricas de adopción: tasa de aceptación de sugerencias, tiempo de revisión, incidentes post-IA versus post-humano.",
+        "Comunicar la política al equipo completo, sin ambigüedad y sin excepciones tácitas.",
+        "Revisar el framework cada trimestre — la madurez de las herramientas cambia más rápido que los procesos que las gobiernan.",
+      ]},
+
+      { h2: "Cierre" },
+      { p: "La infraestructura que sostiene bancos, hospitales y servicios públicos no puede depender de un extremo ni del otro. No puede depender de la fe ciega en que un modelo va a acertar siempre, y tampoco puede darse el lujo de ignorar una herramienta que ya está cambiando la velocidad a la que se construye software. El trabajo de un CTO hoy es diseñar ese camino intermedio — con fases, con métricas, y con un límite de control humano que no se negocia nunca." },
+    ],
+  },
+  en: {
+    backLabel: "Back to portfolio",
+    tag: "Technical Leadership · AI",
+    title: "AI on the Team: How a CTO Can Move Forward Without Losing Control",
+    lead: "Neither handing all development over to a model, nor pretending AI isn't already changing how we write software. A CTO's real job today is designing the pace of adoption — and the exact point where human judgment doesn't get negotiated away.",
+    author: "Abel Aníbal Cáceres",
+    role: "CTO",
+    date: "September 5, 2026",
+    readTime: "6 min read",
+    ctaTitle: "Having this same conversation with your team?",
+    ctaText: "If you'd like to compare notes on AI adoption, technical governance, or critical infrastructure, reach out.",
+    ctaBtn: "Let's talk",
+    footerText: "Abel Aníbal Cáceres — La Falda, Córdoba, Argentina",
+    body: [
+      { h2: "The False Dilemma" },
+      { p: "For many CTOs, the conversation about generative AI on the engineering team has gotten stuck between two equally risky extremes. One is unchecked enthusiasm: letting agents generate entire features, reviewing them lightly, and trusting that \"it'll get better\" with the next model release. The other is resistance: treating AI as a passing trend, banning it, or simply ignoring it while the rest of the industry moves faster. Both share the same underlying mistake — they treat AI adoption as a binary decision, when it's actually an organizational maturity process that needs to be managed in stages, with its own metrics and clearly defined emergency exits." },
+      { p: "After leading critical infrastructure teams in banking and healthcare, my conclusion is simple: the right question isn't <strong>\"do we use AI or not?\"</strong> It's <strong>\"what phase are we in, and which pieces of human control are we not willing to give up in any phase?\"</strong>" },
+
+      { h2: "The Cost of Delegating Everything" },
+      { p: "When a team hands development over to AI almost entirely, the first symptoms don't show up in the code — they show up in the people. Pull request review turns into a formality: \"CI passed, the AI wrote it fine, approved.\" Junior developers stop exercising the muscle of debugging a problem from scratch, because an assistant always proposes a solution before they've finished understanding the symptom. In critical infrastructure — the kind that sustains financial transactions or patient care — this is particularly dangerous: institutional knowledge about why an architectural decision was made starts living in a prompt history instead of in the heads and documentation of the team that has to respond when something breaks at three in the morning." },
+
+      { h2: "The Cost of Ignoring It" },
+      { p: "The opposite extreme carries a different but equally real cost. Teams that ban or discourage generative AI end up competing at a disadvantage: repetitive tasks an assistant can solve in minutes — boilerplate, syntax migrations, first drafts of tests — keep getting done by hand, and senior talent ends up spending its most valuable time on work that shouldn't take hours anymore. Ignoring AI doesn't make it irrelevant to the business either: security, observability, and support teams across the industry are already adopting it, and a CTO who stays on the sidelines loses the chance to shape how adoption happens, before it happens anyway, without governance." },
+
+      { h2: "A Gradual Path: Four Phases, Not a Switch" },
+      { p: "The alternative to both extremes is to treat AI adoption like any other new organizational capability: with an explicit, measured, reversible maturity path." },
+      { graphic: "ladder" },
+      { p: "No organization has to move all its teams through the four phases at the same speed. A platform team sustaining payments might sit at Phase 2 while an internal tooling team already operates at Phase 4 — and that's correct, not an inconsistency to fix." },
+
+      { h2: "What I Don't Negotiate in Any Phase" },
+      { p: "However advanced the adoption gets, there are lines that, in my experience, don't get crossed in critical infrastructure:" },
+      { graphic: "autonomy" },
+      { ul: [
+        "A human reviews and approves every change that reaches production, no exceptions, regardless of who — or what — wrote it.",
+        "Architecture and security decisions get made with and by people, never by a model's suggestion.",
+        "The reasoning behind a technical decision is documented and traceable to an accountable person, not just to a prompt history.",
+        "All generated code goes through the same quality gates as hand-written code: tests, linters, security review, no shortcuts.",
+        "The team keeps the ability to operate and debug systems without the AI tool available — it never becomes a critical single-vendor dependency.",
+      ]},
+
+      { h2: "This Week's Checklist" },
+      { ol: [
+        "Map which phase each team is actually in today — not every part of the organization moves at the same pace, and that's fine.",
+        "Write down explicitly which types of changes are never delegated without direct human review.",
+        "Instrument adoption metrics: suggestion acceptance rate, review time, post-AI incidents versus post-human incidents.",
+        "Communicate the policy to the whole team, with no ambiguity and no tacit exceptions.",
+        "Revisit the framework every quarter — tool maturity moves faster than the processes that govern it.",
+      ]},
+
+      { h2: "Closing" },
+      { p: "The infrastructure that sustains banks, hospitals, and public services can't depend on either extreme. It can't rely on blind faith that a model will always get it right, and it can't afford to ignore a tool that's already changing the speed at which software gets built. A CTO's job today is to design that middle path — with phases, with metrics, and with a line of human control that never gets negotiated away." },
+    ],
+  },
+};
+
+// ─── Cursor ──────────────────────────────────────────────────────────────
+(function initCursor() {
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  window.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    setTimeout(() => {
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+    }, 80);
+  });
+})();
+
+// ─── Fade-in on scroll ───────────────────────────────────────────────────
+let fadeObserver, graphicObserver;
+function initObservers() {
+  if (fadeObserver) fadeObserver.disconnect();
+  fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '-60px' });
+  document.querySelectorAll('.fade-in').forEach((el, i) => {
+    el.style.transitionDelay = (i % 6) * 0.08 + 's';
+    fadeObserver.observe(el);
+  });
+
+  if (graphicObserver) graphicObserver.disconnect();
+  graphicObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        entry.target.querySelectorAll('[data-pct]').forEach(el => {
+          el.style.width = el.dataset.pct + '%';
+        });
+        graphicObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.getElementById('maturityLadder') && graphicObserver.observe(document.getElementById('maturityLadder'));
+  document.getElementById('autonomyChart') && graphicObserver.observe(document.getElementById('autonomyChart'));
+}
+
+// ─── Render ──────────────────────────────────────────────────────────────
+let lang = 'es';
+
+function renderBody(t) {
+  return t.body.map(block => {
+    if (block.h2) return `<div class="fade-in"><h2>${block.h2}</h2></div>`;
+    if (block.p) return `<p class="fade-in">${block.p}</p>`;
+    if (block.ul) return `<ul class="fade-in">${block.ul.map(li => `<li>${li}</li>`).join('')}</ul>`;
+    if (block.ol) return `<ol class="fade-in">${block.ol.map(li => `<li>${li}</li>`).join('')}</ol>`;
+    if (block.graphic === 'ladder') return ladderHTML(lang);
+    if (block.graphic === 'autonomy') return autonomyHTML(lang);
+    return '';
+  }).join('');
+}
+
+function render() {
+  const t = CONTENT[lang];
+  document.documentElement.lang = lang;
+
+  document.getElementById('backLabel').textContent = t.backLabel;
+  document.getElementById('articleTag').textContent = t.tag;
+  document.getElementById('articleTitle').textContent = t.title;
+  document.getElementById('articleLead').textContent = t.lead;
+  document.getElementById('articleMeta').innerHTML = `
+    <span><strong>${t.author}</strong> · ${t.role}</span>
+    <span>${t.date}</span>
+    <span>${t.readTime}</span>
+  `;
+
+  document.getElementById('articleBody').innerHTML = renderBody(t);
+
+  document.getElementById('ctaTitle').textContent = t.ctaTitle;
+  document.getElementById('ctaText').textContent = t.ctaText;
+  const ctaBtn = document.getElementById('ctaBtn');
+  ctaBtn.textContent = t.ctaBtn;
+  ctaBtn.href = '../index.html#contacto';
+
+  document.getElementById('footerText').textContent = `© ${new Date().getFullYear()} ${t.footerText}`;
+
+  initObservers();
+}
+
+document.getElementById('langSwitch').addEventListener('click', () => {
+  lang = lang === 'es' ? 'en' : 'es';
+  const btn = document.getElementById('langSwitch');
+  btn.classList.toggle('lang-es', lang === 'es');
+  btn.classList.toggle('lang-en', lang === 'en');
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

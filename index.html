@@ -349,6 +349,29 @@ section { padding: 6rem 2rem; }
   transition: width 1.2s cubic-bezier(0.22,1,0.36,1);
 }
 
+/* Blog */
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.blog-card {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 1.75rem; border-radius: var(--radius);
+  transition: border-color 0.3s, transform 0.3s;
+  display: flex; flex-direction: column; gap: 0.9rem;
+  text-decoration: none; color: inherit;
+}
+.blog-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.blog-card-top { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.blog-tag { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.blog-date { font-size: 0.72rem; color: var(--text-muted); }
+.blog-title { font-family: 'Cormorant', serif; font-size: 1.3rem; font-weight: 600; line-height: 1.3; }
+.blog-excerpt { font-size: 0.88rem; color: var(--text-soft); line-height: 1.75; flex: 1; }
+.blog-card-foot {
+  font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-soft); display: flex; align-items: center; justify-content: space-between;
+  transition: color 0.2s; padding-top: 0.75rem; border-top: 1px solid var(--border);
+}
+.blog-card:hover .blog-card-foot { color: var(--accent); }
+.blog-card-foot span:last-child { display: inline-flex; align-items: center; gap: 0.5rem; }
+
 /* Education */
 .edu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
 .edu-card {
@@ -590,6 +613,13 @@ footer {
     </div>
   </section>
 
+  <section id="blog">
+    <div class="container">
+      <div class="section-label fade-in" id="labelBlog"></div>
+      <div class="blog-grid" id="blogGrid"></div>
+    </div>
+  </section>
+
   <section id="referencias">
     <div class="container">
       <div class="section-label fade-in" id="labelRefs"></div>
@@ -645,8 +675,8 @@ const LOGOS = {
 // ─── CONTENIDO BILINGÜE ─────────────────────────────────────────────────────
 const CONTENT = {
   es: {
-    nav: ["Propósito", "Sobre mí", "Experiencia", "Casos de Éxito", "Conferencias", "Proyectos", "Skills", "Educación", "Contacto"],
-    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#contacto"],
+    nav: ["Propósito", "Sobre mí", "Experiencia", "Casos de Éxito", "Conferencias", "Proyectos", "Skills", "Educación", "Blog", "Contacto"],
+    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#blog", "#contacto"],
     subtitle: "Ejecutivo Tecnológico impulsando IA, Infraestructura Cloud y Transformación Digital Crítica",
     description: "Más de 15 años liderando la transformación de infraestructuras críticas para organizaciones de los sectores financiero y de salud — combinando visión estratégica, automatización a escala y arquitecturas cloud resilientes para acelerar resultados de negocio.",
     heroCta1: "Contactame",
@@ -668,6 +698,18 @@ const CONTENT = {
     sectionEdu: "Educación",
     sectionLang: "Idiomas",
     sectionRefs: "Reconocimiento Profesional",
+    sectionBlog: "Blog",
+    blogReadMore: "Leer artículo",
+    blog: [
+      {
+        title: "IA en el equipo: cómo un CTO puede avanzar sin soltar el control",
+        excerpt: "Un framework de adopción gradual para líderes técnicos: ni delegar todo el desarrollo a un modelo, ni ignorar que la IA ya está cambiando cómo escribimos software. Cuatro fases para ganar velocidad sin resignar criterio humano.",
+        date: "5 Sep 2026",
+        tag: "Liderazgo Técnico · IA",
+        readTime: "6 min",
+        url: "blog/ia-equipos-ctos.html",
+      },
+    ],
     contactTitle: "Hablemos de tu",
     contactTitleEm: "próximo desafío",
     contactText: "Disponible para roles de liderazgo técnico, consultoría de infraestructura o proyectos DevOps. No dudes en escribirme.",
@@ -780,8 +822,8 @@ const CONTENT = {
     },
   },
   en: {
-    nav: ["Mission", "About", "Experience", "Success Stories", "Speaking", "Projects", "Skills", "Education", "Contact"],
-    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#contacto"],
+    nav: ["Mission", "About", "Experience", "Success Stories", "Speaking", "Projects", "Skills", "Education", "Blog", "Contact"],
+    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#blog", "#contacto"],
     subtitle: "Technology Executive driving AI, Cloud Infrastructure and Critical Digital Transformation",
     description: "15+ years leading the transformation of critical infrastructure for financial and healthcare organizations — combining strategic vision, automation at scale, and resilient cloud architecture to accelerate business outcomes.",
     heroCta1: "Contact me",
@@ -803,6 +845,18 @@ const CONTENT = {
     sectionEdu: "Education",
     sectionLang: "Languages",
     sectionRefs: "Professional Recognition",
+    sectionBlog: "Blog",
+    blogReadMore: "Read article",
+    blog: [
+      {
+        title: "AI on the Team: How a CTO Can Move Forward Without Losing Control",
+        excerpt: "A gradual adoption framework for technical leaders: neither handing all development over to a model, nor ignoring that AI is already changing how we write software. Four phases to gain speed without giving up human judgment.",
+        date: "Sep 5, 2026",
+        tag: "Technical Leadership · AI",
+        readTime: "6 min",
+        url: "blog/ia-equipos-ctos.html",
+      },
+    ],
     contactTitle: "Let's talk about your",
     contactTitleEm: "next challenge",
     contactText: "Available for technical leadership roles, infrastructure consulting, or DevOps projects. Feel free to reach out.",
@@ -1070,6 +1124,21 @@ function render() {
       <div class="edu-title">${item.title}</div>
       <div class="edu-institution">${item.institution}</div>
     </div>`).join('');
+
+  document.getElementById('labelBlog').textContent = t.sectionBlog;
+  document.getElementById('blogGrid').innerHTML = t.blog.map(p => `
+    <a href="${p.url}" class="blog-card fade-in">
+      <div class="blog-card-top">
+        <span class="blog-tag">${p.tag}</span>
+        <span class="blog-date">${p.date}</span>
+      </div>
+      <div class="blog-title">${p.title}</div>
+      <p class="blog-excerpt">${p.excerpt}</p>
+      <div class="blog-card-foot">
+        <span>${p.readTime}</span>
+        <span>${t.blogReadMore} ${ICONS.external}</span>
+      </div>
+    </a>`).join('');
 
   document.getElementById('labelRefs').textContent = t.sectionRefs;
   const testimonials = TESTIMONIALS[lang];
