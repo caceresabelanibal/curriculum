@@ -196,6 +196,13 @@ nav {
 }
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
+.btn-cv {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: inherit; background: transparent;
+}
+.btn-cv svg { flex-shrink: 0; }
+.btn-cv:disabled { opacity: 0.5; cursor: default; }
+
 .hero-photo {
   width: 220px; height: 280px; border-radius: 2px; object-fit: cover;
   filter: grayscale(20%); border: 1px solid var(--border);
@@ -262,6 +269,15 @@ section { padding: 6rem 2rem; }
 .timeline-title { font-family: 'Cormorant', serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.25rem; }
 .timeline-company { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
 .timeline-desc { font-size: 0.92rem; color: var(--text-soft); line-height: 1.8; }
+.timeline-head { display: flex; align-items: flex-start; gap: 1rem; }
+.timeline-logo {
+  flex-shrink: 0; width: 42px; height: 42px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent), #8a6d2f);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant', serif; font-weight: 700; font-size: 1rem;
+  color: #0d0d0d; letter-spacing: 0.02em;
+}
+.timeline-head-text { flex: 1; min-width: 0; }
 
 /* Case Studies */
 .case-studies { display: flex; flex-direction: column; gap: 2rem; }
@@ -551,6 +567,7 @@ footer {
         <div class="hero-ctas">
           <a href="#contacto" class="btn-primary" id="heroCta1"></a>
           <a href="https://www.linkedin.com/in/abelanibalcaceres" target="_blank" rel="noreferrer" class="btn-secondary" id="heroCta2"></a>
+          <button type="button" class="btn-secondary btn-cv" id="heroCvBtn"></button>
         </div>
       </div>
       <div class="hero-photo-wrap">
@@ -670,6 +687,24 @@ const ICONS = {
   pin: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>',
   linkedin: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>',
   external: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>',
+  download: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m7 10 5 5 5-5"/><path d="M20 21H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2Z"/></svg>',
+};
+
+// ─── DATOS DEL CV EN PDF ────────────────────────────────────────────────────
+const CV_BADGES = ["BA", "NA", "NU", "TE", "SS", "PS", "HP"]; // iniciales por empresa, mismo orden que experience[]
+const CV_HIGHLIGHTS = {
+  es: [
+    "Liderazgo técnico en la migración internacional de una plataforma de credenciales privilegiadas (Pitbull Keyholder -> Bomgar Vault), coordinando equipos en Argentina, Colombia y EE. UU.",
+    "Automatización integral de infraestructura de escritorios virtuales en Nasdaq, reduciendo el aprovisionamiento de varios días a minutos.",
+    "Fundador de Morph Analytics; desarrollo de los productos propios VulneraTrack y Taninzu, hoy en producción.",
+    "Orador internacional invitado en Segurinfo Chile, Colombia y Argentina (2013).",
+  ],
+  en: [
+    "Technical lead of an international migration of a privileged credential platform (Pitbull Keyholder -> Bomgar Vault), coordinating teams across Argentina, Colombia, and the USA.",
+    "End-to-end automation of virtual desktop infrastructure at Nasdaq, cutting provisioning time from several days to minutes.",
+    "Founder of Morph Analytics; developed the in-house products VulneraTrack and Taninzu, both now in production.",
+    "Invited international speaker at Segurinfo Chile, Colombia, and Argentina (2013).",
+  ],
 };
 
 // ─── LOGOS DE PROYECTOS ─────────────────────────────────────────────────────
@@ -696,6 +731,8 @@ const CONTENT = {
     description: "Más de 15 años liderando la transformación de infraestructuras críticas para organizaciones de los sectores financiero y de salud — combinando visión estratégica, automatización a escala y arquitecturas cloud resilientes para acelerar resultados de negocio.",
     heroCta1: "Contactame",
     heroCta2: "Ver LinkedIn",
+    heroCvBtn: "Descargar CV (PDF)",
+    heroCvBtnLoading: "Generando…",
     sectionMission: "Propósito Profesional",
     missionLead: "Mi propósito a largo plazo es diseñar y liderar plataformas de infraestructura crítica — cloud-native, automatizadas y cada vez más asistidas por inteligencia artificial — que hagan más resiliente, segura y eficiente la operación de organizaciones financieras, de salud y del sector público.",
     missionBody: [
@@ -844,6 +881,8 @@ const CONTENT = {
     description: "15+ years leading the transformation of critical infrastructure for financial and healthcare organizations — combining strategic vision, automation at scale, and resilient cloud architecture to accelerate business outcomes.",
     heroCta1: "Contact me",
     heroCta2: "View LinkedIn",
+    heroCvBtn: "Download CV (PDF)",
+    heroCvBtnLoading: "Generating…",
     sectionMission: "Professional Mission",
     missionLead: "My long-term endeavor is to design and lead critical infrastructure platforms — cloud-native, automated, and increasingly assisted by artificial intelligence — that make the operations of financial, healthcare, and public-sector organizations more resilient, secure, and efficient.",
     missionBody: [
@@ -1061,6 +1100,8 @@ function render() {
   document.getElementById('heroDesc').textContent = t.description;
   document.getElementById('heroCta1').textContent = t.heroCta1;
   document.getElementById('heroCta2').textContent = t.heroCta2;
+  const cvBtn = document.getElementById('heroCvBtn');
+  if (!cvBtn.disabled) cvBtn.innerHTML = `${ICONS.download}<span>${t.heroCvBtn}</span>`;
 
   document.getElementById('labelMission').textContent = t.sectionMission;
   document.getElementById('missionLead').textContent = t.missionLead;
@@ -1073,11 +1114,16 @@ function render() {
   ).join('');
 
   document.getElementById('labelExp').textContent = t.sectionExp;
-  document.getElementById('timeline').innerHTML = t.experience.map(item => `
+  document.getElementById('timeline').innerHTML = t.experience.map((item, i) => `
     <div class="timeline-item fade-in">
-      <div class="timeline-date">${item.date}</div>
-      <div class="timeline-title">${item.title}</div>
-      <div class="timeline-company">${item.company}</div>
+      <div class="timeline-head">
+        <div class="timeline-logo">${CV_BADGES[i] || ''}</div>
+        <div class="timeline-head-text">
+          <div class="timeline-date">${item.date}</div>
+          <div class="timeline-title">${item.title}</div>
+          <div class="timeline-company">${item.company}</div>
+        </div>
+      </div>
       <div class="timeline-desc">${item.description}</div>
     </div>`).join('');
 
@@ -1199,6 +1245,264 @@ document.getElementById('langSwitch').addEventListener('click', () => {
   btn.classList.toggle('lang-es', lang === 'es');
   btn.classList.toggle('lang-en', lang === 'en');
   render();
+});
+
+// ─── GENERADOR DE CV EN PDF (jsPDF, carga diferida) ────────────────────────
+function loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('No se pudo cargar ' + src));
+    document.head.appendChild(s);
+  });
+}
+
+function mmLineHeight(pt) { return pt * 0.3528 * 1.15 + 0.35; }
+
+function buildCVPdf(l) {
+  const t = CONTENT[l];
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const pageW = 210, pageH = 297;
+  const marginX = 16, marginTop = 18, marginBottom = 16;
+  const contentW = pageW - marginX * 2;
+  let y = marginTop;
+
+  const ink = [26, 24, 22];
+  const inkSoft = [80, 76, 70];
+  const inkMuted = [140, 135, 128];
+  const accent = [166, 128, 42];
+  const ruleColor = [222, 214, 198];
+
+  function addFooter() {
+    const page = doc.internal.getNumberOfPages();
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...inkMuted);
+    doc.text('abelanibalcaceres.site', marginX, pageH - 9);
+    doc.text(String(page), pageW - marginX, pageH - 9, { align: 'right' });
+  }
+
+  function ensureSpace(h) {
+    if (y + h > pageH - marginBottom) {
+      addFooter();
+      doc.addPage();
+      y = marginTop;
+    }
+  }
+
+  function sectionLabel(txt) {
+    ensureSpace(11);
+    const label = txt.toUpperCase();
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    doc.setTextColor(...accent);
+    doc.text(label, marginX, y);
+    doc.setDrawColor(...ruleColor);
+    doc.setLineWidth(0.3);
+    doc.line(marginX + doc.getTextWidth(label) + 3, y - 1.2, pageW - marginX, y - 1.2);
+    y += 6.5;
+  }
+
+  // ── Header ──
+  doc.setFont('times', 'bold');
+  doc.setFontSize(23);
+  doc.setTextColor(...ink);
+  doc.text('Abel Aníbal Cáceres', marginX, y);
+  y += 6.5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10.5);
+  doc.setTextColor(...accent);
+  const subtitleLines = doc.splitTextToSize(t.subtitle, contentW);
+  doc.text(subtitleLines, marginX, y);
+  y += subtitleLines.length * mmLineHeight(10.5) + 3.5;
+
+  const c = t.contact;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.8);
+  doc.setTextColor(...inkSoft);
+  doc.text([c.email, c.phone, c.location, 'linkedin.com/in/abelanibalcaceres'].join('   •   '), marginX, y);
+  y += 6;
+
+  doc.setDrawColor(...accent);
+  doc.setLineWidth(0.7);
+  doc.line(marginX, y, pageW - marginX, y);
+  y += 8;
+
+  // ── Perfil profesional ──
+  sectionLabel(l === 'es' ? 'Perfil Profesional' : 'Professional Profile');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9.3);
+  doc.setTextColor(...inkSoft);
+  const summaryLines = doc.splitTextToSize(t.description, contentW);
+  ensureSpace(summaryLines.length * mmLineHeight(9.3) + 6);
+  doc.text(summaryLines, marginX, y);
+  y += summaryLines.length * mmLineHeight(9.3) + 8;
+
+  // ── Experiencia ──
+  sectionLabel(l === 'es' ? 'Experiencia Profesional' : 'Professional Experience');
+  t.experience.forEach((item, i) => {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    const descLines = doc.splitTextToSize(item.description, contentW - 13);
+    const blockH = 9 + descLines.length * mmLineHeight(8.5) + 5;
+    ensureSpace(blockH);
+
+    doc.setFillColor(...accent);
+    doc.roundedRect(marginX, y - 4.2, 9.5, 9.5, 1.6, 1.6, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text(CV_BADGES[i] || '•', marginX + 4.75, y + 1.1, { align: 'center' });
+
+    const textX = marginX + 13;
+    const textW = contentW - 13;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10.2);
+    doc.setTextColor(...ink);
+    doc.text(item.title, textX, y);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.2);
+    doc.setTextColor(...inkMuted);
+    doc.text(item.date, pageW - marginX, y, { align: 'right' });
+
+    y += 4.6;
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8.6);
+    doc.setTextColor(...accent);
+    doc.text(item.company, textX, y);
+    y += 4.6;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...inkSoft);
+    doc.text(descLines, textX, y);
+    y += descLines.length * mmLineHeight(8.5) + 5.5;
+  });
+  y += 1;
+
+  // ── Logros destacados ──
+  sectionLabel(l === 'es' ? 'Logros Destacados' : 'Key Achievements');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.6);
+  doc.setTextColor(...inkSoft);
+  CV_HIGHLIGHTS[l].forEach(h => {
+    const lines = doc.splitTextToSize('•  ' + h, contentW);
+    ensureSpace(lines.length * mmLineHeight(8.6) + 2);
+    doc.text(lines, marginX, y);
+    y += lines.length * mmLineHeight(8.6) + 2.2;
+  });
+  y += 3;
+
+  // ── Skills ──
+  sectionLabel(t.sectionSkills);
+  t.skills.forEach(group => {
+    const label = group.group + ':  ';
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.6);
+    doc.setTextColor(...ink);
+    const labelW = doc.getTextWidth(label);
+    const tagsLines = doc.splitTextToSize(group.tags.join(', '), contentW - labelW);
+    ensureSpace(tagsLines.length * mmLineHeight(8.6) + 2.4);
+    doc.text(label, marginX, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...inkSoft);
+    doc.text(tagsLines, marginX + labelW, y);
+    y += tagsLines.length * mmLineHeight(8.6) + 2.6;
+  });
+  y += 2;
+
+  // ── Certificaciones (2 columnas) ──
+  sectionLabel(t.sectionCerts);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.6);
+  doc.setTextColor(...inkSoft);
+  const colW = contentW / 2 - 5;
+  const half = Math.ceil(t.certifications.length / 2);
+  const col1 = t.certifications.slice(0, half);
+  const col2 = t.certifications.slice(half);
+  ensureSpace(24);
+  const startY = y;
+  let y1 = y;
+  col1.forEach(cert => {
+    const lines = doc.splitTextToSize('•  ' + cert, colW);
+    doc.text(lines, marginX, y1);
+    y1 += lines.length * mmLineHeight(8.6) + 1.8;
+  });
+  let y2 = startY;
+  col2.forEach(cert => {
+    const lines = doc.splitTextToSize('•  ' + cert, colW);
+    doc.text(lines, marginX + colW + 10, y2);
+    y2 += lines.length * mmLineHeight(8.6) + 1.8;
+  });
+  y = Math.max(y1, y2) + 5;
+
+  // ── Educación ──
+  sectionLabel(t.sectionEdu);
+  t.education.forEach(ed => {
+    ensureSpace(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...ink);
+    doc.text(ed.title, marginX, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.2);
+    doc.setTextColor(...inkMuted);
+    doc.text(ed.year, pageW - marginX, y, { align: 'right' });
+    y += 4.4;
+    doc.setFontSize(8.6);
+    doc.setTextColor(...inkSoft);
+    doc.text(ed.institution, marginX, y);
+    y += 6.5;
+  });
+  y += 1;
+
+  // ── Idiomas ──
+  sectionLabel(t.sectionLang);
+  t.languages.forEach(lg => {
+    ensureSpace(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...ink);
+    doc.text(lg.lang, marginX, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.2);
+    doc.setTextColor(...inkMuted);
+    doc.text(lg.level, pageW - marginX, y, { align: 'right' });
+    y += 3.6;
+    doc.setFillColor(...ruleColor);
+    doc.rect(marginX, y, contentW, 1.4, 'F');
+    doc.setFillColor(...accent);
+    doc.rect(marginX, y, contentW * (lg.pct / 100), 1.4, 'F');
+    y += 7.5;
+  });
+
+  addFooter();
+  doc.save(l === 'es' ? 'CV-Abel-Anibal-Caceres.pdf' : 'CV-Abel-Anibal-Caceres-EN.pdf');
+}
+
+document.getElementById('heroCvBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('heroCvBtn');
+  if (btn.disabled) return;
+  btn.disabled = true;
+  const t = CONTENT[lang];
+  btn.innerHTML = `<span>${t.heroCvBtnLoading}</span>`;
+  try {
+    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    buildCVPdf(lang);
+  } catch (e) {
+    console.error(e);
+    alert(lang === 'es' ? 'No se pudo generar el PDF. Intentá de nuevo.' : 'Could not generate the PDF. Please try again.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `${ICONS.download}<span>${CONTENT[lang].heroCvBtn}</span>`;
+  }
 });
 
 render();
