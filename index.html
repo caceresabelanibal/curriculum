@@ -269,9 +269,14 @@ section { padding: 6rem 2rem; }
 .timeline-title { font-family: 'Cormorant', serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.25rem; }
 .timeline-company { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
 .timeline-desc { font-size: 0.92rem; color: var(--text-soft); line-height: 1.8; }
-.timeline-head { display: flex; align-items: center; gap: 1.5rem; }
+.timeline-head { display: flex; align-items: center; gap: 1.25rem; }
+/* Ancho fijo = el logo más ancho (Techunting) a la altura de referencia, así todas las
+   filas quedan alineadas y el divisor cae siempre en la misma posición. */
+.timeline-logo-col {
+  flex-shrink: 0; width: 214px;
+  display: flex; align-items: center; justify-content: center;
+}
 .timeline-logo {
-  flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: 'Cormorant', serif; font-weight: 700; font-size: 2rem;
   letter-spacing: 0.02em; overflow: hidden;
@@ -287,14 +292,17 @@ section { padding: 6rem 2rem; }
   transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 .timeline-item:hover .timeline-logo.is-text { border-color: var(--accent); box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
-.timeline-logo.is-img { height: 64px; width: auto; max-width: 200px; }
-.timeline-logo.is-img img { height: 100%; width: auto; max-width: 200px; object-fit: contain; }
+.timeline-logo.is-img { height: 48px; }
+.timeline-logo.is-img img { height: 100%; width: auto; max-width: 214px; object-fit: contain; }
+.timeline-divider { width: 1px; align-self: stretch; background: var(--border); flex-shrink: 0; transition: background-color 0.3s; }
+.timeline-item:hover .timeline-divider { background: var(--accent); }
 .timeline-head-text { flex: 1; min-width: 0; }
 @media (max-width: 560px) {
+  .timeline-logo-col { width: 152px; }
   .timeline-logo.is-text { width: 72px; height: 72px; border-radius: 12px; font-size: 1.4rem; }
-  .timeline-logo.is-img { height: 46px; max-width: 138px; }
-  .timeline-logo.is-img img { max-width: 138px; }
-  .timeline-head { gap: 1rem; }
+  .timeline-logo.is-img { height: 34px; }
+  .timeline-logo.is-img img { max-width: 152px; }
+  .timeline-head { gap: 0.85rem; }
 }
 
 /* Case Studies */
@@ -1153,7 +1161,8 @@ function render() {
     return `
     <div class="timeline-item fade-in">
       <div class="timeline-head">
-        <div class="timeline-logo ${logoClass}">${logoInner}</div>
+        <div class="timeline-logo-col"><div class="timeline-logo ${logoClass}">${logoInner}</div></div>
+        <div class="timeline-divider"></div>
         <div class="timeline-head-text">
           <div class="timeline-date">${item.date}</div>
           <div class="timeline-title">${item.title}</div>
@@ -1404,7 +1413,11 @@ function buildCVPdf(l, logoData) {
 
   // ── Experiencia ──
   sectionLabel(l === 'es' ? 'Experiencia Profesional' : 'Professional Experience');
-  const LOGO_COL_W = 26, BADGE_W = 20, BADGE_H = 17, IMG_H = 14, TEXT_INDENT = LOGO_COL_W + 6;
+  // Ancho de columna fijo = el logo más ancho (Techunting) a la altura de referencia,
+  // así todas las filas quedan alineadas y el divisor cae siempre en la misma posición.
+  const LOGO_COL_W = 34, BADGE_W = 20, BADGE_H = 17, IMG_H = 7.6, DIVIDER_GAP = 4, TEXT_GAP = 6;
+  const TEXT_INDENT = LOGO_COL_W + DIVIDER_GAP + TEXT_GAP;
+  const dividerX = marginX + LOGO_COL_W + DIVIDER_GAP / 2;
   t.experience.forEach((item, i) => {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
@@ -1416,19 +1429,25 @@ function buildCVPdf(l, logoData) {
     const logoTop = y - 5.2;
     const logoImg = logoData && logoData[i];
     if (logoImg) {
-      // Logo real, sin tarjeta ni fondo: se apoya directo sobre la página blanca.
+      // Logo real, sin tarjeta ni fondo: se apoya directo sobre la página blanca, centrado en la columna.
       let w = IMG_H * logoImg.w / logoImg.h, h = IMG_H;
       const maxW = LOGO_COL_W - 2;
       if (w > maxW) { w = maxW; h = maxW * logoImg.h / logoImg.w; }
-      doc.addImage(logoImg.dataUrl, 'PNG', marginX, logoTop + (BADGE_H - h) / 2, w, h);
+      const cx = marginX + LOGO_COL_W / 2;
+      doc.addImage(logoImg.dataUrl, 'PNG', cx - w / 2, logoTop + (BADGE_H - h) / 2, w, h);
     } else {
+      const bx = marginX + (LOGO_COL_W - BADGE_W) / 2;
       doc.setFillColor(...accent);
-      doc.roundedRect(marginX, logoTop, BADGE_W, BADGE_H, 2.8, 2.8, 'F');
+      doc.roundedRect(bx, logoTop, BADGE_W, BADGE_H, 2.8, 2.8, 'F');
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(15);
       doc.setTextColor(255, 255, 255);
-      doc.text(CV_BADGES[i] || '•', marginX + BADGE_W / 2, logoTop + BADGE_H / 2 + 1.7, { align: 'center' });
+      doc.text(CV_BADGES[i] || '•', bx + BADGE_W / 2, logoTop + BADGE_H / 2 + 1.7, { align: 'center' });
     }
+
+    doc.setDrawColor(...ruleColor);
+    doc.setLineWidth(0.25);
+    doc.line(dividerX, logoTop, dividerX, logoTop + BADGE_H);
 
     const textX = marginX + TEXT_INDENT;
 
