@@ -271,27 +271,29 @@ section { padding: 6rem 2rem; }
 .timeline-desc { font-size: 0.92rem; color: var(--text-soft); line-height: 1.8; }
 .timeline-head { display: flex; align-items: center; gap: 1.5rem; }
 .timeline-logo {
-  flex-shrink: 0; height: 104px; border-radius: 16px;
+  flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: 'Cormorant', serif; font-weight: 700; font-size: 2rem;
   letter-spacing: 0.02em; overflow: hidden;
+  transition: transform 0.3s;
+}
+.timeline-item:hover .timeline-logo { transform: translateY(-3px); }
+.timeline-logo.is-text {
+  width: 104px; height: 104px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent), #8a6d2f);
+  color: #0d0d0d;
   border: 1px solid var(--border);
   box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
-.timeline-item:hover .timeline-logo { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
-.timeline-logo.is-text {
-  width: 104px;
-  background: linear-gradient(135deg, var(--accent), #8a6d2f);
-  color: #0d0d0d;
-}
-.timeline-logo.is-img { width: auto; min-width: 104px; max-width: 190px; background: #fdfcfa; padding: 10px 14px; }
-.timeline-logo.is-img img { width: 100%; height: 100%; object-fit: contain; }
+.timeline-item:hover .timeline-logo.is-text { border-color: var(--accent); box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
+.timeline-logo.is-img { height: 64px; width: auto; max-width: 200px; }
+.timeline-logo.is-img img { height: 100%; width: auto; max-width: 200px; object-fit: contain; }
 .timeline-head-text { flex: 1; min-width: 0; }
 @media (max-width: 560px) {
-  .timeline-logo { height: 72px; border-radius: 12px; font-size: 1.4rem; }
-  .timeline-logo.is-text { width: 72px; }
-  .timeline-logo.is-img { min-width: 72px; max-width: 128px; padding: 7px 10px; }
+  .timeline-logo.is-text { width: 72px; height: 72px; border-radius: 12px; font-size: 1.4rem; }
+  .timeline-logo.is-img { height: 46px; max-width: 138px; }
+  .timeline-logo.is-img img { max-width: 138px; }
   .timeline-head { gap: 1rem; }
 }
 
@@ -708,14 +710,16 @@ const ICONS = {
 
 // ─── LOGOS DE EMPRESAS (Experiencia) ────────────────────────────────────────
 // Mismo orden que experience[]: BluAxis, Nasdaq, Nubiral, Techunting, SanCor Salud, Penta Security Solutions, HP
+// `img` = versión para el sitio (fondo oscuro, extraída/invertida a transparente).
+// `pdfImg` = versión para el PDF (fondo blanco, colores de marca originales).
 const EXPERIENCE_LOGOS = [
   { badge: "BA" }, // BluAxis — sin logo disponible
-  { badge: "NA", img: "logo-nasdaq.png", alt: "Nasdaq" },
-  { badge: "NU", img: "logo-nubiral.png", alt: "Nubiral" },
-  { badge: "TE", img: "logo-techunting.webp", alt: "Techunting" },
-  { badge: "SS", img: "logo-sancor.jpg", alt: "SanCor Salud" },
-  { badge: "PS", img: "logo-pss.jpg", alt: "Penta Security Solutions" },
-  { badge: "HP", img: "logo-hp.webp", alt: "Hewlett Packard Enterprise" },
+  { badge: "NA", img: "logo-nasdaq-site.png", pdfImg: "logo-nasdaq.png", alt: "Nasdaq" },
+  { badge: "NU", img: "logo-nubiral-site.png", pdfImg: "logo-nubiral.png", alt: "Nubiral" },
+  { badge: "TE", img: "logo-techunting-site.png", pdfImg: "logo-techunting-pdf.png", alt: "Techunting" },
+  { badge: "SS", img: "logo-sancor-site.png", pdfImg: "logo-sancor-pdf.png", alt: "SanCor Salud" },
+  { badge: "PS", img: "logo-pss-site.png", pdfImg: "logo-pss-pdf.png", alt: "Penta Security Solutions" },
+  { badge: "HP", img: "logo-hp-site.png", pdfImg: "logo-hp.webp", alt: "Hewlett Packard Enterprise" },
 ];
 
 // ─── DATOS DEL CV EN PDF ────────────────────────────────────────────────────
@@ -1310,7 +1314,10 @@ function loadImageAsPngDataUrl(src) {
 }
 
 function preloadExperienceLogos() {
-  return Promise.all(EXPERIENCE_LOGOS.map(l => l.img ? loadImageAsPngDataUrl(l.img).catch(() => null) : Promise.resolve(null)));
+  return Promise.all(EXPERIENCE_LOGOS.map(l => {
+    const src = l.pdfImg || l.img;
+    return src ? loadImageAsPngDataUrl(src).catch(() => null) : Promise.resolve(null);
+  }));
 }
 
 function buildCVPdf(l, logoData) {
@@ -1397,34 +1404,30 @@ function buildCVPdf(l, logoData) {
 
   // ── Experiencia ──
   sectionLabel(l === 'es' ? 'Experiencia Profesional' : 'Professional Experience');
-  const LOGO_BOX_W = 20, LOGO_BOX_H = 17, TEXT_INDENT = LOGO_BOX_W + 6;
+  const LOGO_COL_W = 26, BADGE_W = 20, BADGE_H = 17, IMG_H = 14, TEXT_INDENT = LOGO_COL_W + 6;
   t.experience.forEach((item, i) => {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
     const descLines = doc.splitTextToSize(item.description, contentW - TEXT_INDENT);
     const textBlockH = 9.2 + descLines.length * mmLineHeight(8.5);
-    const blockH = Math.max(LOGO_BOX_H, textBlockH) + 6;
+    const blockH = Math.max(BADGE_H, textBlockH) + 6;
     ensureSpace(blockH);
 
     const logoTop = y - 5.2;
     const logoImg = logoData && logoData[i];
     if (logoImg) {
-      doc.setFillColor(253, 252, 250);
-      doc.setDrawColor(...ruleColor);
-      doc.setLineWidth(0.3);
-      doc.roundedRect(marginX, logoTop, LOGO_BOX_W, LOGO_BOX_H, 2.4, 2.4, 'FD');
-      const pad = 1.6;
-      const maxW = LOGO_BOX_W - pad * 2, maxH = LOGO_BOX_H - pad * 2;
-      let w = maxW, h = maxW * logoImg.h / logoImg.w;
-      if (h > maxH) { h = maxH; w = maxH * logoImg.w / logoImg.h; }
-      doc.addImage(logoImg.dataUrl, 'PNG', marginX + (LOGO_BOX_W - w) / 2, logoTop + (LOGO_BOX_H - h) / 2, w, h);
+      // Logo real, sin tarjeta ni fondo: se apoya directo sobre la página blanca.
+      let w = IMG_H * logoImg.w / logoImg.h, h = IMG_H;
+      const maxW = LOGO_COL_W - 2;
+      if (w > maxW) { w = maxW; h = maxW * logoImg.h / logoImg.w; }
+      doc.addImage(logoImg.dataUrl, 'PNG', marginX, logoTop + (BADGE_H - h) / 2, w, h);
     } else {
       doc.setFillColor(...accent);
-      doc.roundedRect(marginX, logoTop, LOGO_BOX_W, LOGO_BOX_H, 2.8, 2.8, 'F');
+      doc.roundedRect(marginX, logoTop, BADGE_W, BADGE_H, 2.8, 2.8, 'F');
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(15);
       doc.setTextColor(255, 255, 255);
-      doc.text(CV_BADGES[i] || '•', marginX + LOGO_BOX_W / 2, logoTop + LOGO_BOX_H / 2 + 1.7, { align: 'center' });
+      doc.text(CV_BADGES[i] || '•', marginX + BADGE_W / 2, logoTop + BADGE_H / 2 + 1.7, { align: 'center' });
     }
 
     const textX = marginX + TEXT_INDENT;
@@ -1450,7 +1453,7 @@ function buildCVPdf(l, logoData) {
     doc.setFontSize(8.5);
     doc.setTextColor(...inkSoft);
     doc.text(descLines, textX, y);
-    y += Math.max(descLines.length * mmLineHeight(8.5), LOGO_BOX_H - 9.2) + 5.5;
+    y += Math.max(descLines.length * mmLineHeight(8.5), BADGE_H - 9.2) + 5.5;
   });
   y += 1;
 
