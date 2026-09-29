@@ -269,20 +269,29 @@ section { padding: 6rem 2rem; }
 .timeline-title { font-family: 'Cormorant', serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.25rem; }
 .timeline-company { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
 .timeline-desc { font-size: 0.92rem; color: var(--text-soft); line-height: 1.8; }
-.timeline-head { display: flex; align-items: flex-start; gap: 1rem; }
+.timeline-head { display: flex; align-items: center; gap: 1.5rem; }
 .timeline-logo {
-  flex-shrink: 0; width: 46px; height: 46px; border-radius: 9px;
+  flex-shrink: 0; width: 100px; height: 100px; border-radius: 16px;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Cormorant', serif; font-weight: 700; font-size: 1rem;
+  font-family: 'Cormorant', serif; font-weight: 700; font-size: 2rem;
   letter-spacing: 0.02em; overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
+.timeline-item:hover .timeline-logo { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
 .timeline-logo.is-text {
   background: linear-gradient(135deg, var(--accent), #8a6d2f);
   color: #0d0d0d;
 }
-.timeline-logo.is-img { background: #fdfcfa; padding: 7px; }
+.timeline-logo.is-img { background: #fdfcfa; padding: 16px; }
 .timeline-logo.is-img img { width: 100%; height: 100%; object-fit: contain; }
 .timeline-head-text { flex: 1; min-width: 0; }
+@media (max-width: 560px) {
+  .timeline-logo { width: 68px; height: 68px; border-radius: 12px; font-size: 1.3rem; }
+  .timeline-logo.is-img { padding: 10px; }
+  .timeline-head { gap: 1rem; }
+}
 
 /* Case Studies */
 .case-studies { display: flex; flex-direction: column; gap: 2rem; }
@@ -1386,31 +1395,37 @@ function buildCVPdf(l, logoData) {
 
   // ── Experiencia ──
   sectionLabel(l === 'es' ? 'Experiencia Profesional' : 'Professional Experience');
+  const LOGO_BOX_W = 20, LOGO_BOX_H = 17, TEXT_INDENT = LOGO_BOX_W + 6;
   t.experience.forEach((item, i) => {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
-    const descLines = doc.splitTextToSize(item.description, contentW - 13);
-    const blockH = 9 + descLines.length * mmLineHeight(8.5) + 5;
+    const descLines = doc.splitTextToSize(item.description, contentW - TEXT_INDENT);
+    const textBlockH = 9.2 + descLines.length * mmLineHeight(8.5);
+    const blockH = Math.max(LOGO_BOX_H, textBlockH) + 6;
     ensureSpace(blockH);
 
+    const logoTop = y - 5.2;
     const logoImg = logoData && logoData[i];
     if (logoImg) {
-      doc.setFillColor(255, 255, 255);
-      doc.roundedRect(marginX, y - 4.2, 11, 9.5, 1.4, 1.4, 'F');
-      let w = 9.4, h = 9.4 * logoImg.h / logoImg.w;
-      if (h > 7.8) { h = 7.8; w = 7.8 * logoImg.w / logoImg.h; }
-      doc.addImage(logoImg.dataUrl, 'PNG', marginX + (11 - w) / 2, (y - 4.2) + (9.5 - h) / 2, w, h);
+      doc.setFillColor(253, 252, 250);
+      doc.setDrawColor(...ruleColor);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(marginX, logoTop, LOGO_BOX_W, LOGO_BOX_H, 2.4, 2.4, 'FD');
+      const pad = 3;
+      const maxW = LOGO_BOX_W - pad * 2, maxH = LOGO_BOX_H - pad * 2;
+      let w = maxW, h = maxW * logoImg.h / logoImg.w;
+      if (h > maxH) { h = maxH; w = maxH * logoImg.w / logoImg.h; }
+      doc.addImage(logoImg.dataUrl, 'PNG', marginX + (LOGO_BOX_W - w) / 2, logoTop + (LOGO_BOX_H - h) / 2, w, h);
     } else {
       doc.setFillColor(...accent);
-      doc.roundedRect(marginX, y - 4.2, 9.5, 9.5, 1.6, 1.6, 'F');
+      doc.roundedRect(marginX, logoTop, LOGO_BOX_W, LOGO_BOX_H, 2.8, 2.8, 'F');
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(15);
       doc.setTextColor(255, 255, 255);
-      doc.text(CV_BADGES[i] || '•', marginX + 4.75, y + 1.1, { align: 'center' });
+      doc.text(CV_BADGES[i] || '•', marginX + LOGO_BOX_W / 2, logoTop + LOGO_BOX_H / 2 + 1.7, { align: 'center' });
     }
 
-    const textX = marginX + 13;
-    const textW = contentW - 13;
+    const textX = marginX + TEXT_INDENT;
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10.2);
@@ -1433,7 +1448,7 @@ function buildCVPdf(l, logoData) {
     doc.setFontSize(8.5);
     doc.setTextColor(...inkSoft);
     doc.text(descLines, textX, y);
-    y += descLines.length * mmLineHeight(8.5) + 5.5;
+    y += Math.max(descLines.length * mmLineHeight(8.5), LOGO_BOX_H - 9.2) + 5.5;
   });
   y += 1;
 
