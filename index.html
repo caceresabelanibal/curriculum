@@ -278,20 +278,14 @@ section { padding: 6rem 2rem; }
 }
 .timeline-logo {
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Cormorant', serif; font-weight: 700; font-size: 2rem;
-  letter-spacing: 0.02em; overflow: hidden;
+  overflow: hidden;
   transition: transform 0.3s;
 }
 .timeline-item:hover .timeline-logo { transform: translateY(-3px); }
-.timeline-logo.is-text {
-  width: 104px; height: 104px; border-radius: 16px;
-  background: linear-gradient(135deg, var(--accent), #8a6d2f);
-  color: #0d0d0d;
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+.timeline-logo.is-word {
+  font-family: 'Times New Roman', Times, serif; font-weight: 700; font-style: normal;
+  color: #2f6fd6; font-size: 2.2rem; line-height: 1; white-space: nowrap;
 }
-.timeline-item:hover .timeline-logo.is-text { border-color: var(--accent); box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
 .timeline-logo.is-img { height: 48px; }
 .timeline-logo.is-img img { height: 100%; width: auto; max-width: 214px; object-fit: contain; }
 .timeline-divider { width: 1px; align-self: stretch; background: var(--border); flex-shrink: 0; transition: background-color 0.3s; }
@@ -299,7 +293,7 @@ section { padding: 6rem 2rem; }
 .timeline-head-text { flex: 1; min-width: 0; }
 @media (max-width: 560px) {
   .timeline-logo-col { width: 152px; }
-  .timeline-logo.is-text { width: 72px; height: 72px; border-radius: 12px; font-size: 1.4rem; }
+  .timeline-logo.is-word { font-size: 1.5rem; }
   .timeline-logo.is-img { height: 34px; }
   .timeline-logo.is-img img { max-width: 152px; }
   .timeline-head { gap: 0.85rem; }
@@ -721,7 +715,7 @@ const ICONS = {
 // `img` = versión para el sitio (fondo oscuro, extraída/invertida a transparente).
 // `pdfImg` = versión para el PDF (fondo blanco, colores de marca originales).
 const EXPERIENCE_LOGOS = [
-  { badge: "BA" }, // BluAxis — sin logo disponible
+  { word: "BluAxis" }, // BluAxis — sin logo disponible, se muestra como wordmark
   { badge: "NA", img: "logo-nasdaq-site.png", pdfImg: "logo-nasdaq.png", alt: "Nasdaq" },
   { badge: "NU", img: "logo-nubiral-site.png", pdfImg: "logo-nubiral.png", alt: "Nubiral" },
   { badge: "TE", img: "logo-techunting-site.png", pdfImg: "logo-techunting-pdf.png", alt: "Techunting" },
@@ -1156,8 +1150,8 @@ function render() {
   document.getElementById('labelExp').textContent = t.sectionExp;
   document.getElementById('timeline').innerHTML = t.experience.map((item, i) => {
     const logo = EXPERIENCE_LOGOS[i] || {};
-    const logoInner = logo.img ? `<img src="${logo.img}" alt="${logo.alt}" loading="lazy" />` : (logo.badge || '');
-    const logoClass = logo.img ? 'is-img' : 'is-text';
+    const logoInner = logo.img ? `<img src="${logo.img}" alt="${logo.alt}" loading="lazy" />` : (logo.word || logo.badge || '');
+    const logoClass = logo.img ? 'is-img' : (logo.word ? 'is-word' : 'is-text');
     return `
     <div class="timeline-item fade-in">
       <div class="timeline-head">
@@ -1413,6 +1407,7 @@ function buildCVPdf(l, logoData) {
 
   // ── Experiencia ──
   sectionLabel(l === 'es' ? 'Experiencia Profesional' : 'Professional Experience');
+  y += 3.5; // mismo aire que entre secciones: el logo/badge de la primera fila es más alto que una línea de texto
   // Ancho de columna fijo = el logo más ancho (Techunting) a la altura de referencia,
   // así todas las filas quedan alineadas y el divisor cae siempre en la misma posición.
   const LOGO_COL_W = 34, BADGE_W = 20, BADGE_H = 17, IMG_H = 7.6, DIVIDER_GAP = 4, TEXT_GAP = 6;
@@ -1435,6 +1430,12 @@ function buildCVPdf(l, logoData) {
       if (w > maxW) { w = maxW; h = maxW * logoImg.h / logoImg.w; }
       const cx = marginX + LOGO_COL_W / 2;
       doc.addImage(logoImg.dataUrl, 'PNG', cx - w / 2, logoTop + (BADGE_H - h) / 2, w, h);
+    } else if (EXPERIENCE_LOGOS[i] && EXPERIENCE_LOGOS[i].word) {
+      // Wordmark de marca (sin logo disponible): mismo tamaño de referencia que un logo real.
+      doc.setFont('times', 'bold');
+      doc.setFontSize(21);
+      doc.setTextColor(47, 111, 214);
+      doc.text(EXPERIENCE_LOGOS[i].word, marginX + LOGO_COL_W / 2, logoTop + BADGE_H / 2 + 2.4, { align: 'center' });
     } else {
       const bx = marginX + (LOGO_COL_W - BADGE_W) / 2;
       doc.setFillColor(...accent);
