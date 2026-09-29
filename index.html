@@ -271,12 +271,17 @@ section { padding: 6rem 2rem; }
 .timeline-desc { font-size: 0.92rem; color: var(--text-soft); line-height: 1.8; }
 .timeline-head { display: flex; align-items: flex-start; gap: 1rem; }
 .timeline-logo {
-  flex-shrink: 0; width: 42px; height: 42px; border-radius: 9px;
-  background: linear-gradient(135deg, var(--accent), #8a6d2f);
+  flex-shrink: 0; width: 46px; height: 46px; border-radius: 9px;
   display: flex; align-items: center; justify-content: center;
   font-family: 'Cormorant', serif; font-weight: 700; font-size: 1rem;
-  color: #0d0d0d; letter-spacing: 0.02em;
+  letter-spacing: 0.02em; overflow: hidden;
 }
+.timeline-logo.is-text {
+  background: linear-gradient(135deg, var(--accent), #8a6d2f);
+  color: #0d0d0d;
+}
+.timeline-logo.is-img { background: #fdfcfa; padding: 7px; }
+.timeline-logo.is-img img { width: 100%; height: 100%; object-fit: contain; }
 .timeline-head-text { flex: 1; min-width: 0; }
 
 /* Case Studies */
@@ -690,8 +695,20 @@ const ICONS = {
   download: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m7 10 5 5 5-5"/><path d="M20 21H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2Z"/></svg>',
 };
 
+// ─── LOGOS DE EMPRESAS (Experiencia) ────────────────────────────────────────
+// Mismo orden que experience[]: BluAxis, Nasdaq, Nubiral, Techunting, SanCor Salud, Penta Security Solutions, HP
+const EXPERIENCE_LOGOS = [
+  { badge: "BA" }, // BluAxis — sin logo disponible
+  { badge: "NA", img: "logo-nasdaq.png", alt: "Nasdaq" },
+  { badge: "NU", img: "logo-nubiral.png", alt: "Nubiral" },
+  { badge: "TE", img: "logo-techunting.webp", alt: "Techunting" },
+  { badge: "SS", img: "logo-sancor.jpg", alt: "SanCor Salud" },
+  { badge: "PS", img: "logo-pss.jpg", alt: "Penta Security Solutions" },
+  { badge: "HP", img: "logo-hp.webp", alt: "Hewlett Packard Enterprise" },
+];
+
 // ─── DATOS DEL CV EN PDF ────────────────────────────────────────────────────
-const CV_BADGES = ["BA", "NA", "NU", "TE", "SS", "PS", "HP"]; // iniciales por empresa, mismo orden que experience[]
+const CV_BADGES = EXPERIENCE_LOGOS.map(l => l.badge); // fallback textual, mismo orden que experience[]
 const CV_HIGHLIGHTS = {
   es: [
     "Liderazgo técnico en la migración internacional de una plataforma de credenciales privilegiadas (Pitbull Keyholder -> Bomgar Vault), coordinando equipos en Argentina, Colombia y EE. UU.",
@@ -1114,10 +1131,14 @@ function render() {
   ).join('');
 
   document.getElementById('labelExp').textContent = t.sectionExp;
-  document.getElementById('timeline').innerHTML = t.experience.map((item, i) => `
+  document.getElementById('timeline').innerHTML = t.experience.map((item, i) => {
+    const logo = EXPERIENCE_LOGOS[i] || {};
+    const logoInner = logo.img ? `<img src="${logo.img}" alt="${logo.alt}" loading="lazy" />` : (logo.badge || '');
+    const logoClass = logo.img ? 'is-img' : 'is-text';
+    return `
     <div class="timeline-item fade-in">
       <div class="timeline-head">
-        <div class="timeline-logo">${CV_BADGES[i] || ''}</div>
+        <div class="timeline-logo ${logoClass}">${logoInner}</div>
         <div class="timeline-head-text">
           <div class="timeline-date">${item.date}</div>
           <div class="timeline-title">${item.title}</div>
@@ -1125,7 +1146,8 @@ function render() {
         </div>
       </div>
       <div class="timeline-desc">${item.description}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   document.getElementById('labelCases').textContent = t.sectionCases;
   document.getElementById('caseStudies').innerHTML = t.caseStudies.map(c => `
@@ -1261,7 +1283,26 @@ function loadScriptOnce(src) {
 
 function mmLineHeight(pt) { return pt * 0.3528 * 1.15 + 0.35; }
 
-function buildCVPdf(l) {
+function loadImageAsPngDataUrl(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      resolve({ dataUrl: canvas.toDataURL('image/png'), w: img.naturalWidth, h: img.naturalHeight });
+    };
+    img.onerror = () => reject(new Error('No se pudo cargar ' + src));
+    img.src = src;
+  });
+}
+
+function preloadExperienceLogos() {
+  return Promise.all(EXPERIENCE_LOGOS.map(l => l.img ? loadImageAsPngDataUrl(l.img).catch(() => null) : Promise.resolve(null)));
+}
+
+function buildCVPdf(l, logoData) {
   const t = CONTENT[l];
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
@@ -1352,12 +1393,21 @@ function buildCVPdf(l) {
     const blockH = 9 + descLines.length * mmLineHeight(8.5) + 5;
     ensureSpace(blockH);
 
-    doc.setFillColor(...accent);
-    doc.roundedRect(marginX, y - 4.2, 9.5, 9.5, 1.6, 1.6, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(255, 255, 255);
-    doc.text(CV_BADGES[i] || '•', marginX + 4.75, y + 1.1, { align: 'center' });
+    const logoImg = logoData && logoData[i];
+    if (logoImg) {
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(marginX, y - 4.2, 11, 9.5, 1.4, 1.4, 'F');
+      let w = 9.4, h = 9.4 * logoImg.h / logoImg.w;
+      if (h > 7.8) { h = 7.8; w = 7.8 * logoImg.w / logoImg.h; }
+      doc.addImage(logoImg.dataUrl, 'PNG', marginX + (11 - w) / 2, (y - 4.2) + (9.5 - h) / 2, w, h);
+    } else {
+      doc.setFillColor(...accent);
+      doc.roundedRect(marginX, y - 4.2, 9.5, 9.5, 1.6, 1.6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(255, 255, 255);
+      doc.text(CV_BADGES[i] || '•', marginX + 4.75, y + 1.1, { align: 'center' });
+    }
 
     const textX = marginX + 13;
     const textW = contentW - 13;
@@ -1494,8 +1544,11 @@ document.getElementById('heroCvBtn').addEventListener('click', async () => {
   const t = CONTENT[lang];
   btn.innerHTML = `<span>${t.heroCvBtnLoading}</span>`;
   try {
-    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-    buildCVPdf(lang);
+    const [, logoData] = await Promise.all([
+      loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'),
+      preloadExperienceLogos(),
+    ]);
+    buildCVPdf(lang, logoData);
   } catch (e) {
     console.error(e);
     alert(lang === 'es' ? 'No se pudo generar el PDF. Intentá de nuevo.' : 'Could not generate the PDF. Please try again.');
