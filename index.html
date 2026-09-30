@@ -1393,6 +1393,60 @@ function loadImageAsPngDataUrl(src) {
   });
 }
 
+function loadProfilePhotoVignette(src, targetAspect) {
+  targetAspect = targetAspect || 220 / 280; // mismo recorte retrato que .hero-photo
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const sw = img.naturalWidth, sh = img.naturalHeight;
+      const srcAspect = sw / sh;
+      let sx = 0, sy = 0, cw = sw, ch = sh;
+      if (srcAspect > targetAspect) {
+        cw = sh * targetAspect;
+        sx = (sw - cw) / 2;
+      } else {
+        ch = sw / targetAspect;
+        sy = (sh - ch) / 2;
+      }
+      const w = Math.round(cw), h = Math.round(ch);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, sx, sy, cw, ch, 0, 0, w, h);
+
+      // Leve desaturación, igual que el filter: grayscale(20%) del hero.
+      const id = ctx.getImageData(0, 0, w, h);
+      const d = id.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+        d[i]     = d[i]     * 0.82 + g * 0.18;
+        d[i + 1] = d[i + 1] * 0.82 + g * 0.18;
+        d[i + 2] = d[i + 2] * 0.82 + g * 0.18;
+      }
+      ctx.putImageData(id, 0, 0);
+
+      // Máscara ovalada con desvanecido hacia el borde, igual que el mask-image del hero.
+      const maskCanvas = document.createElement('canvas');
+      maskCanvas.width = w; maskCanvas.height = h;
+      const mctx = maskCanvas.getContext('2d');
+      mctx.translate(w / 2, h / 2);
+      mctx.scale(w / 2, h / 2);
+      const grad = mctx.createRadialGradient(0, 0, 0.34, 0, 0, 0.85);
+      grad.addColorStop(0, 'rgba(0,0,0,1)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      mctx.fillStyle = grad;
+      mctx.fillRect(-1, -1, 2, 2);
+
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.drawImage(maskCanvas, 0, 0);
+
+      resolve({ dataUrl: canvas.toDataURL('image/png'), w, h });
+    };
+    img.onerror = () => reject(new Error('No se pudo cargar ' + src));
+    img.src = src;
+  });
+}
+
 function preloadExperienceLogos() {
   return Promise.all(EXPERIENCE_LOGOS.map(l => {
     const src = l.pdfImg || l.img;
@@ -1447,23 +1501,14 @@ function buildCVPdf(l, logoData, photoData) {
   }
 
   // ── Header ──
-  const PHOTO_SIZE = 24;
-  const photoX = pageW - marginX - PHOTO_SIZE;
-  const photoY = marginTop - 2;
-  const headerTextW = photoData ? contentW - PHOTO_SIZE - 8 : contentW;
+  // Retrato con el mismo desvanecido ovalado que la foto del sitio (no un cuadrado con clip).
+  const PHOTO_H = 36, PHOTO_W = photoData ? PHOTO_H * (photoData.w / photoData.h) : 0;
+  const photoX = pageW - marginX - PHOTO_W;
+  const photoY = marginTop - 4;
+  const headerTextW = photoData ? contentW - PHOTO_W - 8 : contentW;
 
   if (photoData) {
-    doc.saveGraphicsState();
-    doc.roundedRect(photoX, photoY, PHOTO_SIZE, PHOTO_SIZE, 3, 3, null);
-    doc.clip();
-    doc.discardPath();
-    let pw = PHOTO_SIZE, ph = PHOTO_SIZE * photoData.h / photoData.w;
-    if (ph < PHOTO_SIZE) { ph = PHOTO_SIZE; pw = PHOTO_SIZE * photoData.w / photoData.h; }
-    doc.addImage(photoData.dataUrl, 'PNG', photoX - (pw - PHOTO_SIZE) / 2, photoY - (ph - PHOTO_SIZE) / 2, pw, ph);
-    doc.restoreGraphicsState();
-    doc.setDrawColor(...ruleColor);
-    doc.setLineWidth(0.4);
-    doc.roundedRect(photoX, photoY, PHOTO_SIZE, PHOTO_SIZE, 3, 3, 'S');
+    doc.addImage(photoData.dataUrl, 'PNG', photoX, photoY, PHOTO_W, PHOTO_H);
   }
 
   doc.setFont('times', 'bold');
@@ -1487,7 +1532,7 @@ function buildCVPdf(l, logoData, photoData) {
   doc.text(contactLines, marginX, y);
   y += contactLines.length * mmLineHeight(8.8) + 2;
 
-  y = Math.max(y, photoY + PHOTO_SIZE + 3);
+  y = Math.max(y, photoY + PHOTO_H + 3);
   doc.setDrawColor(...accent);
   doc.setLineWidth(0.7);
   doc.line(marginX, y, pageW - marginX, y);
@@ -1685,7 +1730,7 @@ document.getElementById('heroCvBtn').addEventListener('click', async () => {
     const [, logoData, photoData] = await Promise.all([
       loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'),
       preloadExperienceLogos(),
-      loadImageAsPngDataUrl('yo.jpeg').catch(() => null),
+      loadProfilePhotoVignette('yo.jpeg').catch(() => null),
     ]);
     buildCVPdf(lang, logoData, photoData);
   } catch (e) {
