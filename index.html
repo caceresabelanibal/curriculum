@@ -1515,12 +1515,17 @@ function buildCVPdf(l, logoData, photoData) {
   y += subtitleLines.length * mmLineHeight(10.5) + 3.5;
 
   const c = t.contact;
-  doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.8);
-  doc.setTextColor(...inkSoft);
-  const contactLines = doc.splitTextToSize([c.email, c.phone, c.location, 'linkedin.com/in/abelanibalcaceres'].join('   •   '), headerTextW);
-  doc.text(contactLines, marginX, y);
-  y += contactLines.length * mmLineHeight(8.8) + 2;
+  [c.email, c.phone, c.location, 'linkedin.com/in/abelanibalcaceres'].forEach((item) => {
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...accent);
+    doc.text('•', marginX, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...inkSoft);
+    doc.text(item, marginX + 4, y);
+    y += mmLineHeight(8.8) + 0.8;
+  });
+  y += 1.2;
 
   y = Math.max(y, photoY + PHOTO_H + 3);
   doc.setDrawColor(...accent);
