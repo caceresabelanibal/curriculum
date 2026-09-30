@@ -92,6 +92,16 @@ nav {
   text-transform: uppercase; transition: color 0.3s;
 }
 .nav-links a:hover { color: var(--accent); }
+.nav-controls { display: flex; align-items: center; gap: 0.85rem; }
+.nav-toggle {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 32px; height: 32px; background: none; border: none; padding: 0;
+  cursor: none;
+}
+.nav-toggle span { display: block; width: 100%; height: 2px; background: var(--text); transition: transform 0.3s, opacity 0.3s; }
+nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* Language Switch */
 .lang-switch {
@@ -292,11 +302,14 @@ section { padding: 6rem 2rem; }
 .timeline-item:hover .timeline-divider { background: var(--accent); }
 .timeline-head-text { flex: 1; min-width: 0; }
 @media (max-width: 560px) {
-  .timeline-logo-col { width: 152px; }
-  .timeline-logo.is-word { font-size: 1.5rem; }
-  .timeline-logo.is-img { height: 34px; }
-  .timeline-logo.is-img img { max-width: 152px; }
-  .timeline-head { gap: 0.85rem; }
+  /* Logo arriba, texto abajo a todo el ancho: la descripción ya no queda apretada. */
+  .timeline-head { flex-direction: column; align-items: flex-start; gap: 0.85rem; }
+  .timeline-logo-col { width: auto; }
+  .timeline-divider { width: 100%; height: 1px; align-self: stretch; }
+  .timeline-head-text { width: 100%; }
+  .timeline-logo.is-word { font-size: 1.6rem; }
+  .timeline-logo.is-img { height: 40px; }
+  .timeline-logo.is-img img { max-width: 200px; }
 }
 
 /* Case Studies */
@@ -549,13 +562,35 @@ footer {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .container { padding: 0 1.15rem; }
+  section { padding: 3.75rem 1.15rem; }
+
+  .hero { padding: 6.5rem 1.15rem 2.5rem; }
   .hero-inner { grid-template-columns: 1fr; }
   .hero-photo-wrap { display: none; }
+  .hero-ctas { flex-direction: column; align-items: stretch; }
+  .hero-ctas > a, .hero-ctas > button { width: 100%; text-align: center; justify-content: center; }
+
   .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .contact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-  nav { padding: 1.25rem 1rem; gap: 1rem; }
-  .nav-links { gap: 1rem; }
-  .nav-links a { font-size: 0.68rem; }
+
+  .lang-header { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+
+  .testimonials-track-wrapper { margin: 0 -1.15rem; }
+
+  /* Nav: menú hamburguesa */
+  nav { padding: 1.1rem 1.15rem; flex-wrap: wrap; }
+  nav.nav-open { background: var(--bg); min-height: 100vh; overflow-y: auto; padding-bottom: 2rem; }
+  .nav-logo { order: 1; }
+  .nav-controls { order: 2; }
+  .nav-toggle { display: flex; }
+  .nav-links {
+    order: 3; flex-basis: 100%; width: 100%;
+    display: none; flex-direction: column; align-items: stretch; gap: 0;
+    margin-top: 1.25rem;
+  }
+  nav.nav-open .nav-links { display: flex; }
+  .nav-links a { display: block; padding: 0.9rem 0.25rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; letter-spacing: 0.1em; }
 }
 @media (pointer: coarse) {
   body, .btn-primary, .btn-secondary, .lang-switch { cursor: auto; }
@@ -570,11 +605,16 @@ footer {
 <nav>
   <a href="#inicio" class="nav-logo"></a>
   <ul class="nav-links" id="navLinks"></ul>
-  <button class="lang-switch lang-es" id="langSwitch" aria-label="Switch language">
-    <span class="lang-option">ES</span>
-    <span class="lang-slider"></span>
-    <span class="lang-option">EN</span>
-  </button>
+  <div class="nav-controls">
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <button class="lang-switch lang-es" id="langSwitch" aria-label="Switch language">
+      <span class="lang-option">ES</span>
+      <span class="lang-slider"></span>
+      <span class="lang-option">EN</span>
+    </button>
+  </div>
 </nav>
 
 <main>
@@ -1298,6 +1338,31 @@ document.getElementById('langSwitch').addEventListener('click', () => {
   btn.classList.toggle('lang-en', lang === 'en');
   render();
 });
+
+// ─── MENÚ MÓVIL (hamburguesa) ───────────────────────────────────────────────
+(function initMobileNav() {
+  const navEl = document.querySelector('nav');
+  const toggleBtn = document.getElementById('navToggle');
+  const navLinksEl = document.getElementById('navLinks');
+
+  function closeMenu() {
+    navEl.classList.remove('nav-open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    const willOpen = !navEl.classList.contains('nav-open');
+    navEl.classList.toggle('nav-open', willOpen);
+    toggleBtn.setAttribute('aria-expanded', String(willOpen));
+    document.body.style.overflow = willOpen ? 'hidden' : '';
+  });
+
+  // Delegado: los links se regeneran en cada render(), pero #navLinks persiste.
+  navLinksEl.addEventListener('click', (e) => {
+    if (e.target.closest('a')) closeMenu();
+  });
+})();
 
 // ─── GENERADOR DE CV EN PDF (jsPDF, carga diferida) ────────────────────────
 function loadScriptOnce(src) {
