@@ -1400,7 +1400,7 @@ function preloadExperienceLogos() {
   }));
 }
 
-function buildCVPdf(l, logoData) {
+function buildCVPdf(l, logoData, photoData) {
   const t = CONTENT[l];
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
@@ -1447,6 +1447,25 @@ function buildCVPdf(l, logoData) {
   }
 
   // ── Header ──
+  const PHOTO_SIZE = 24;
+  const photoX = pageW - marginX - PHOTO_SIZE;
+  const photoY = marginTop - 2;
+  const headerTextW = photoData ? contentW - PHOTO_SIZE - 8 : contentW;
+
+  if (photoData) {
+    doc.saveGraphicsState();
+    doc.roundedRect(photoX, photoY, PHOTO_SIZE, PHOTO_SIZE, 3, 3, null);
+    doc.clip();
+    doc.discardPath();
+    let pw = PHOTO_SIZE, ph = PHOTO_SIZE * photoData.h / photoData.w;
+    if (ph < PHOTO_SIZE) { ph = PHOTO_SIZE; pw = PHOTO_SIZE * photoData.w / photoData.h; }
+    doc.addImage(photoData.dataUrl, 'PNG', photoX - (pw - PHOTO_SIZE) / 2, photoY - (ph - PHOTO_SIZE) / 2, pw, ph);
+    doc.restoreGraphicsState();
+    doc.setDrawColor(...ruleColor);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(photoX, photoY, PHOTO_SIZE, PHOTO_SIZE, 3, 3, 'S');
+  }
+
   doc.setFont('times', 'bold');
   doc.setFontSize(23);
   doc.setTextColor(...ink);
@@ -1456,7 +1475,7 @@ function buildCVPdf(l, logoData) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10.5);
   doc.setTextColor(...accent);
-  const subtitleLines = doc.splitTextToSize(t.subtitle, contentW);
+  const subtitleLines = doc.splitTextToSize(t.subtitle, headerTextW);
   doc.text(subtitleLines, marginX, y);
   y += subtitleLines.length * mmLineHeight(10.5) + 3.5;
 
@@ -1464,9 +1483,11 @@ function buildCVPdf(l, logoData) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.8);
   doc.setTextColor(...inkSoft);
-  doc.text([c.email, c.phone, c.location, 'linkedin.com/in/abelanibalcaceres'].join('   •   '), marginX, y);
-  y += 6;
+  const contactLines = doc.splitTextToSize([c.email, c.phone, c.location, 'linkedin.com/in/abelanibalcaceres'].join('   •   '), headerTextW);
+  doc.text(contactLines, marginX, y);
+  y += contactLines.length * mmLineHeight(8.8) + 2;
 
+  y = Math.max(y, photoY + PHOTO_SIZE + 3);
   doc.setDrawColor(...accent);
   doc.setLineWidth(0.7);
   doc.line(marginX, y, pageW - marginX, y);
@@ -1661,11 +1682,12 @@ document.getElementById('heroCvBtn').addEventListener('click', async () => {
   const t = CONTENT[lang];
   btn.innerHTML = `<span>${t.heroCvBtnLoading}</span>`;
   try {
-    const [, logoData] = await Promise.all([
+    const [, logoData, photoData] = await Promise.all([
       loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'),
       preloadExperienceLogos(),
+      loadImageAsPngDataUrl('yo.jpeg').catch(() => null),
     ]);
-    buildCVPdf(lang, logoData);
+    buildCVPdf(lang, logoData, photoData);
   } catch (e) {
     console.error(e);
     alert(lang === 'es' ? 'No se pudo generar el PDF. Intentá de nuevo.' : 'Could not generate the PDF. Please try again.');
