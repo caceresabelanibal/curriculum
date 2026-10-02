@@ -447,6 +447,19 @@ section { padding: 6rem 2rem; }
 .edu-title { font-family: 'Cormorant', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.3rem; }
 .edu-institution { font-size: 0.85rem; color: var(--text-muted); }
 
+/* Credenciales Profesionales */
+.credentials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+.credential-card {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 2rem; border-radius: var(--radius); transition: border-color 0.3s;
+  display: flex; flex-direction: column; gap: 1.1rem;
+}
+.credential-card:hover { border-color: var(--accent); }
+.credential-logo { height: 54px; display: flex; align-items: center; }
+.credential-logo img { height: 100%; width: auto; max-width: 220px; object-fit: contain; }
+.credential-title { font-family: 'Cormorant', serif; font-size: 1.15rem; font-weight: 600; }
+.credential-body { font-size: 0.88rem; color: var(--text-soft); line-height: 1.75; }
+
 /* Contact */
 .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
 .contact-title {
@@ -705,6 +718,13 @@ footer {
     </div>
   </section>
 
+  <section id="credenciales">
+    <div class="container">
+      <div class="section-label fade-in" id="labelCredentials"></div>
+      <div class="credentials-grid" id="credentialsGrid"></div>
+    </div>
+  </section>
+
   <section id="blog">
     <div class="container">
       <div class="section-label fade-in" id="labelBlog"></div>
@@ -799,8 +819,8 @@ const LOGOS = {
 // ─── CONTENIDO BILINGÜE ─────────────────────────────────────────────────────
 const CONTENT = {
   es: {
-    nav: ["Propósito", "Sobre mí", "Experiencia", "Casos de Éxito", "Hitos", "Proyectos", "Skills", "Educación", "Blog", "Contacto"],
-    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#blog", "#contacto"],
+    nav: ["Propósito", "Sobre mí", "Experiencia", "Casos de Éxito", "Hitos", "Proyectos", "Skills", "Educación", "Credenciales", "Blog", "Contacto"],
+    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#credenciales", "#blog", "#contacto"],
     subtitle: "Ejecutivo Tecnológico impulsando IA, Infraestructura Cloud y Transformación Digital Crítica",
     description: "Más de 15 años liderando la transformación de infraestructuras críticas para organizaciones de los sectores financiero y de salud — combinando visión estratégica, automatización a escala y arquitecturas cloud resilientes para acelerar resultados de negocio.",
     heroCta1: "Contactame",
@@ -822,6 +842,7 @@ const CONTENT = {
     sectionSkills: "Skills & Stack",
     sectionCerts: "Certificaciones",
     sectionEdu: "Educación",
+    sectionCredentials: "Credenciales Profesionales",
     sectionLang: "Idiomas",
     sectionRefs: "Reconocimiento Profesional",
     sectionBlog: "Blog",
@@ -947,6 +968,18 @@ const CONTENT = {
       { year: "2017 — 2020", title: "Técnico Superior en Desarrollo de Software", institution: "Instituto Superior Pascal" },
       { year: "2001 — 2004", title: "Bachiller en Comunicación Social y Medios", institution: "CENS 451" },
     ],
+    credentials: [
+      {
+        logo: "logo-cpci-site.png", pdfImg: "logo-cpci-pdf.png", alt: "Consejo Profesional de Ciencias Informáticas de Córdoba",
+        title: "Consejo Profesional de Ciencias Informáticas de Córdoba",
+        body: "Miembro matriculado — M.P. (Matrícula Profesional) N.º 03391.",
+      },
+      {
+        logo: "logo-justicia-site.png", pdfImg: "logo-justicia-pdf.png", alt: "Poder Judicial de la Provincia de Córdoba",
+        title: "Perito Oficial Judicial",
+        body: "Matrícula N.º 77. Designado por Resolución de la Administración General del Poder Judicial de la Provincia de Córdoba N.º 75, de fecha 18/03/2024.",
+      },
+    ],
     contact: {
       email: "caceresabelanibal@gmail.com",
       phone: "+54 351 286 9149",
@@ -955,8 +988,8 @@ const CONTENT = {
     },
   },
   en: {
-    nav: ["Mission", "About", "Experience", "Success Stories", "Milestones", "Projects", "Skills", "Education", "Blog", "Contact"],
-    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#blog", "#contacto"],
+    nav: ["Mission", "About", "Experience", "Success Stories", "Milestones", "Projects", "Skills", "Education", "Credentials", "Blog", "Contact"],
+    navHrefs: ["#mision", "#sobre-mi", "#experiencia", "#casos-exito", "#conferencias", "#proyectos", "#skills", "#educacion", "#credenciales", "#blog", "#contacto"],
     subtitle: "Technology Executive driving AI, Cloud Infrastructure and Critical Digital Transformation",
     description: "15+ years leading the transformation of critical infrastructure for financial and healthcare organizations — combining strategic vision, automation at scale, and resilient cloud architecture to accelerate business outcomes.",
     heroCta1: "Contact me",
@@ -978,6 +1011,7 @@ const CONTENT = {
     sectionSkills: "Skills & Stack",
     sectionCerts: "Certifications",
     sectionEdu: "Education",
+    sectionCredentials: "Professional Credentials",
     sectionLang: "Languages",
     sectionRefs: "Professional Recognition",
     sectionBlog: "Blog",
@@ -1102,6 +1136,18 @@ const CONTENT = {
     education: [
       { year: "2017 — 2020", title: "Higher Technician in Software Development", institution: "Instituto Superior Pascal" },
       { year: "2001 — 2004", title: "Bachelor in Social Communication and Media", institution: "CENS 451" },
+    ],
+    credentials: [
+      {
+        logo: "logo-cpci-site.png", pdfImg: "logo-cpci-pdf.png", alt: "Professional Council of Computer Sciences of Córdoba",
+        title: "Professional Council of Computer Sciences of Córdoba",
+        body: "Registered member — Professional License (M.P.) No. 03391.",
+      },
+      {
+        logo: "logo-justicia-site.png", pdfImg: "logo-justicia-pdf.png", alt: "Judicial Branch of the Province of Córdoba",
+        title: "Official Court-Appointed Expert",
+        body: "License No. 77. Appointed by Resolution of the General Administration of the Judicial Branch of the Province of Córdoba No. 75, dated 03/18/2024.",
+      },
     ],
     contact: {
       email: "caceresabelanibal@gmail.com",
@@ -1280,6 +1326,14 @@ function render() {
       <div class="edu-institution">${item.institution}</div>
     </div>`).join('');
 
+  document.getElementById('labelCredentials').textContent = t.sectionCredentials;
+  document.getElementById('credentialsGrid').innerHTML = t.credentials.map(c => `
+    <div class="credential-card fade-in">
+      <div class="credential-logo"><img src="${c.logo}" alt="${c.alt}" loading="lazy" /></div>
+      <div class="credential-title">${c.title}</div>
+      <p class="credential-body">${c.body}</p>
+    </div>`).join('');
+
   document.getElementById('labelBlog').textContent = t.sectionBlog;
   document.getElementById('blogGrid').innerHTML = t.blog.map(p => `
     <a href="${p.url}" class="blog-card fade-in">
@@ -1441,7 +1495,14 @@ function preloadExperienceLogos() {
   }));
 }
 
-function buildCVPdf(l, logoData, photoData) {
+function preloadCredentialLogos(t) {
+  return Promise.all((t.credentials || []).map(c => {
+    const src = c.pdfImg || c.logo;
+    return src ? loadImageAsPngDataUrl(src).catch(() => null) : Promise.resolve(null);
+  }));
+}
+
+function buildCVPdf(l, logoData, photoData, credentialLogoData) {
   const t = CONTENT[l];
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
@@ -1691,10 +1752,50 @@ function buildCVPdf(l, logoData, photoData) {
   });
   y += 1;
 
+  // ── Credenciales Profesionales ──
+  if (t.credentials && t.credentials.length) {
+    sectionLabel(t.sectionCredentials);
+    const CRED_LOGO_H = 11, CRED_LOGO_MAX_W = 32, CRED_TEXT_INDENT = CRED_LOGO_MAX_W + 6;
+    t.credentials.forEach((cred, i) => {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      const bodyLines = doc.splitTextToSize(cred.body, contentW - CRED_TEXT_INDENT);
+      const blockH = Math.max(CRED_LOGO_H, 4.4 + bodyLines.length * mmLineHeight(8.5)) + 5;
+      ensureSpace(blockH);
+
+      const logoImg = credentialLogoData && credentialLogoData[i];
+      const logoTop = y - 4.2;
+      if (logoImg) {
+        let w = CRED_LOGO_H * logoImg.w / logoImg.h, h = CRED_LOGO_H;
+        if (w > CRED_LOGO_MAX_W) { w = CRED_LOGO_MAX_W; h = CRED_LOGO_MAX_W * logoImg.h / logoImg.w; }
+        doc.addImage(logoImg.dataUrl, 'PNG', marginX, logoTop + (CRED_LOGO_H - h) / 2, w, h);
+      }
+
+      const textX = marginX + CRED_TEXT_INDENT;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...ink);
+      doc.text(cred.title, textX, y);
+      y += 4.4;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(...inkSoft);
+      doc.text(bodyLines, textX, y);
+      y += Math.max(bodyLines.length * mmLineHeight(8.5), CRED_LOGO_H - 4.4) + 5.5;
+    });
+    y += 1;
+  }
+
   // ── Idiomas ──
+  // Si no entra completo, salta de página antes del título para no partir el bloque.
+  if (y + 11 + t.languages.length * 9 > pageH - marginBottom) {
+    addFooter();
+    doc.addPage();
+    y = marginTop;
+  }
   sectionLabel(t.sectionLang);
   t.languages.forEach(lg => {
-    ensureSpace(9);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.setTextColor(...ink);
@@ -1722,12 +1823,13 @@ document.getElementById('heroCvBtn').addEventListener('click', async () => {
   const t = CONTENT[lang];
   btn.innerHTML = `<span>${t.heroCvBtnLoading}</span>`;
   try {
-    const [, logoData, photoData] = await Promise.all([
+    const [, logoData, photoData, credentialLogoData] = await Promise.all([
       loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'),
       preloadExperienceLogos(),
       loadProfilePhoto('yo.jpeg').catch(() => null),
+      preloadCredentialLogos(t),
     ]);
-    buildCVPdf(lang, logoData, photoData);
+    buildCVPdf(lang, logoData, photoData, credentialLogoData);
   } catch (e) {
     console.error(e);
     alert(lang === 'es' ? 'No se pudo generar el PDF. Intentá de nuevo.' : 'Could not generate the PDF. Please try again.');
