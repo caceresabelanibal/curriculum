@@ -446,6 +446,8 @@ section { padding: 6rem 2rem; }
 .edu-year { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
 .edu-title { font-family: 'Cormorant', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.3rem; }
 .edu-institution { font-size: 0.85rem; color: var(--text-muted); }
+.edu-logo { height: 36px; margin-bottom: 1rem; display: flex; align-items: center; }
+.edu-logo img { height: 100%; width: auto; max-width: 160px; object-fit: contain; }
 
 /* Credenciales Profesionales */
 .credentials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
@@ -965,7 +967,7 @@ const CONTENT = {
       { lang: "Inglés", level: "B2 — Nivel Profesional de Trabajo", pct: 72 },
     ],
     education: [
-      { year: "2017 — 2020", title: "Técnico Superior en Desarrollo de Software", institution: "Instituto Superior Pascal" },
+      { year: "2017 — 2020", title: "Técnico Superior en Desarrollo de Software", institution: "Instituto Superior Pascal", logo: "logo-isp-site.png", pdfImg: "logo-isp-pdf.png", alt: "Instituto Superior Pascal" },
       { year: "2001 — 2004", title: "Bachiller en Comunicación Social y Medios", institution: "CENS 451" },
     ],
     credentials: [
@@ -1134,7 +1136,7 @@ const CONTENT = {
       { lang: "English", level: "B2 — Professional Working Proficiency", pct: 72 },
     ],
     education: [
-      { year: "2017 — 2020", title: "Higher Technician in Software Development", institution: "Instituto Superior Pascal" },
+      { year: "2017 — 2020", title: "Higher Technician in Software Development", institution: "Instituto Superior Pascal", logo: "logo-isp-site.png", pdfImg: "logo-isp-pdf.png", alt: "Instituto Superior Pascal" },
       { year: "2001 — 2004", title: "Bachelor in Social Communication and Media", institution: "CENS 451" },
     ],
     credentials: [
@@ -1321,6 +1323,7 @@ function render() {
   document.getElementById('labelEdu').textContent = t.sectionEdu;
   document.getElementById('eduGrid').innerHTML = t.education.map(item => `
     <div class="edu-card fade-in">
+      ${item.logo ? `<div class="edu-logo"><img src="${item.logo}" alt="${item.alt || item.institution}" loading="lazy" /></div>` : ''}
       <div class="edu-year">${item.year}</div>
       <div class="edu-title">${item.title}</div>
       <div class="edu-institution">${item.institution}</div>
@@ -1502,7 +1505,14 @@ function preloadCredentialLogos(t) {
   }));
 }
 
-function buildCVPdf(l, logoData, photoData, credentialLogoData) {
+function preloadEducationLogos(t) {
+  return Promise.all((t.education || []).map(ed => {
+    const src = ed.pdfImg || ed.logo;
+    return src ? loadImageAsPngDataUrl(src).catch(() => null) : Promise.resolve(null);
+  }));
+}
+
+function buildCVPdf(l, logoData, photoData, credentialLogoData, educationLogoData) {
   const t = CONTENT[l];
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
@@ -1734,12 +1744,22 @@ function buildCVPdf(l, logoData, photoData, credentialLogoData) {
 
   // ── Educación ──
   sectionLabel(t.sectionEdu);
-  t.education.forEach(ed => {
-    ensureSpace(9);
+  const EDU_LOGO_H = 10, EDU_LOGO_MAX_W = 28, EDU_TEXT_INDENT = EDU_LOGO_MAX_W + 6;
+  t.education.forEach((ed, i) => {
+    const logoImg = educationLogoData && educationLogoData[i];
+    const textX = logoImg ? marginX + EDU_TEXT_INDENT : marginX;
+    ensureSpace(logoImg ? EDU_LOGO_H + 2 : 9);
+
+    if (logoImg) {
+      let w = EDU_LOGO_H * logoImg.w / logoImg.h, h = EDU_LOGO_H;
+      if (w > EDU_LOGO_MAX_W) { w = EDU_LOGO_MAX_W; h = EDU_LOGO_MAX_W * logoImg.h / logoImg.w; }
+      doc.addImage(logoImg.dataUrl, 'PNG', marginX, y - 4.2 + (EDU_LOGO_H - h) / 2, w, h);
+    }
+
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.setTextColor(...ink);
-    doc.text(ed.title, marginX, y);
+    doc.text(ed.title, textX, y);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.2);
     doc.setTextColor(...inkMuted);
@@ -1747,8 +1767,8 @@ function buildCVPdf(l, logoData, photoData, credentialLogoData) {
     y += 4.4;
     doc.setFontSize(8.6);
     doc.setTextColor(...inkSoft);
-    doc.text(ed.institution, marginX, y);
-    y += 6.5;
+    doc.text(ed.institution, textX, y);
+    y += Math.max(6.5, logoImg ? EDU_LOGO_H - 4.4 + 2 : 0);
   });
   y += 1;
 
@@ -1823,13 +1843,14 @@ document.getElementById('heroCvBtn').addEventListener('click', async () => {
   const t = CONTENT[lang];
   btn.innerHTML = `<span>${t.heroCvBtnLoading}</span>`;
   try {
-    const [, logoData, photoData, credentialLogoData] = await Promise.all([
+    const [, logoData, photoData, credentialLogoData, educationLogoData] = await Promise.all([
       loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'),
       preloadExperienceLogos(),
       loadProfilePhoto('yo.jpeg').catch(() => null),
       preloadCredentialLogos(t),
+      preloadEducationLogos(t),
     ]);
-    buildCVPdf(lang, logoData, photoData, credentialLogoData);
+    buildCVPdf(lang, logoData, photoData, credentialLogoData, educationLogoData);
   } catch (e) {
     console.error(e);
     alert(lang === 'es' ? 'No se pudo generar el PDF. Intentá de nuevo.' : 'Could not generate the PDF. Please try again.');
