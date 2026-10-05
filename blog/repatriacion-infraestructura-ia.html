@@ -374,7 +374,7 @@ function timelineHTML(lang) {
 function criticalityHTML(lang) {
   return `
   <div class="graphic-card">
-    <div class="graphic-title">${lang === 'es' ? 'Dónde recomiendo que viva cada carga de trabajo' : 'Where I recommend each workload should live'}</div>
+    <div class="graphic-title">${lang === 'es' ? 'Dónde vive cada carga de trabajo, según su criticidad' : 'Where each workload lives, by criticality'}</div>
     <div class="autonomy-chart" id="autonomyChart">
       ${CRITICALITY[lang].map(a => `
         <div class="autonomy-row">
@@ -386,8 +386,8 @@ function criticalityHTML(lang) {
         </div>`).join('')}
     </div>
     <p class="graphic-caption">${lang === 'es'
-      ? 'Este es mi propio marco de criterio, construido liderando infraestructura en banca y salud — no una encuesta de la industria. La proporción exacta varía según el sector, pero el principio no: a mayor criticidad y regulación, menor exposición a la nube pública.'
-      : "This is my own working framework, built leading infrastructure in banking and healthcare — not an industry survey. The exact split varies by sector, but the principle doesn't: the more critical and regulated the data, the less exposure to public cloud."}</p>
+      ? 'Es un marco orientativo, no una encuesta de la industria. La proporción exacta varía según el sector, pero el principio se mantiene: a mayor criticidad y regulación, menor exposición a la nube pública.'
+      : "It's an illustrative framework, not an industry survey. The exact split varies by sector, but the principle holds: the more critical and regulated the data, the less exposure to public cloud."}</p>
   </div>`;
 }
 
@@ -419,12 +419,12 @@ const CONTENT = {
       { p: "Pero el repliegue total hacia el centro de datos propio tiene su propio costo, y pretender que la solución es \"volver a 2005\" sería repetir el mismo error con el signo invertido. La elasticidad de la nube pública sigue siendo insustituible para cargas de trabajo variables —picos estacionales, lanzamientos de producto, experimentación—, y mantener capacidad on-premise sobredimensionada \"por las dudas\" es exactamente el mismo desperdicio de capital que se criticaba hace una década, solo que ahora en servidores propios en lugar de instancias en la nube. Las organizaciones que se repliegan por completo, sin distinguir qué cargas necesitan ese control y cuáles no, terminan pagando en rigidez operativa lo que antes pagaban en factura de AWS." },
 
       { h2: "Un regreso selectivo, no un péndulo completo" },
-      { p: "Lo que estoy viendo en la práctica, liderando infraestructura en banca y en salud, no es un regreso total al centro de datos propio, sino una repatriación selectiva guiada por un criterio simple: ¿qué tan crítico es el dato, y qué tan regulado está el sector?" },
+      { p: "Lo que se observa en la práctica no es un regreso total al centro de datos propio, sino una repatriación selectiva guiada por un criterio simple: ¿qué tan crítico es el dato, y qué tan regulado está el sector?" },
       { graphic: "timeline" },
       { p: "El péndulo no vuelve al punto de partida — vuelve a un punto de equilibrio más maduro, donde la pregunta ya no es \"nube sí o no\", sino \"qué va en cada lugar, y por qué\"." },
 
       { h2: "Dónde vive cada carga, según su criticidad" },
-      { p: "En mi experiencia liderando migraciones e infraestructura en Nasdaq, en SanCor Salud y en proyectos bancarios, la variable que mejor predice dónde debería vivir una carga de trabajo no es su antigüedad ni su tamaño, sino su nivel de criticidad y regulación." },
+      { p: "La variable que mejor predice dónde debería vivir una carga de trabajo no es su antigüedad ni su tamaño, sino su nivel de criticidad y regulación." },
       { graphic: "criticality" },
 
       { h2: "La misma curva se está dibujando con la IA" },
@@ -471,12 +471,12 @@ const CONTENT = {
       { p: "But a full retreat to owned data centers carries its own cost, and pretending the solution is \"going back to 2005\" would repeat the same mistake with the sign flipped. Public cloud elasticity is still irreplaceable for variable workloads — seasonal spikes, product launches, experimentation — and keeping oversized on-premise capacity \"just in case\" is exactly the same waste of capital that was criticized a decade ago, just now sitting on owned servers instead of cloud instances. Organizations that retreat entirely, without distinguishing which workloads actually need that control, end up paying in operational rigidity what they used to pay in their AWS bill." },
 
       { h2: "A Selective Return, Not a Full Swing" },
-      { p: "What I'm seeing in practice, leading infrastructure in banking and healthcare, isn't a full return to owned data centers, but a selective repatriation guided by a simple criterion: how critical is the data, and how regulated is the sector?" },
+      { p: "What's happening in practice isn't a full return to owned data centers, but a selective repatriation guided by a simple criterion: how critical is the data, and how regulated is the sector?" },
       { graphic: "timeline" },
       { p: "The pendulum doesn't swing back to its starting point — it swings to a more mature equilibrium, where the question is no longer \"cloud or not,\" but \"what goes where, and why.\"" },
 
       { h2: "Where Each Workload Lives, by Criticality" },
-      { p: "In my experience leading migrations and infrastructure at Nasdaq, at SanCor Salud, and on banking projects, the variable that best predicts where a workload should live isn't its age or size — it's its level of criticality and regulation." },
+      { p: "The variable that best predicts where a workload should live isn't its age or size — it's its level of criticality and regulation." },
       { graphic: "criticality" },
 
       { h2: "The Same Curve Is Being Drawn With AI" },
